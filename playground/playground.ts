@@ -1,11 +1,5 @@
 // import {startBenchmark} from './benchmark';
-import {pkgName} from '../src';
+import {KeyboardSimulator} from '../src';
 
-try {
-	console.log('pkgName', pkgName);
-	// startBenchmark()
-}
-catch (err) {
-	console.error('--- Error ---');
-	console.error(err);
-}
+console.log('KeyboardSimulator', KeyboardSimulator);
+// startBenchmark()

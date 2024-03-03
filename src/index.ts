@@ -1,1 +1,2 @@
-export {pkgName} from './pkg-name';
+export {KeyboardSimulator} from './keyboard-simulator';
+export * from './types';

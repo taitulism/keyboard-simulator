@@ -1,4 +1,4 @@
-![Build Status](https://github.com/taitulism/pkg-name/actions/workflows/node-ci.yml/badge.svg)
+![Build Status](https://github.com/taitulism/keyboard-simulator/actions/workflows/node-ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
@@ -10,7 +10,6 @@ First Thing's First
 * src/pkg-name.ts (use vs-code refactor)
 * src/index.ts
 * rollup.prod.config.js
-* playground/playground.ts
 * playground/playground.html
 * tests/index.spec.ts
 * tests/api.spec.ts
