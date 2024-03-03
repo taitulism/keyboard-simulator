@@ -1,0 +1,61 @@
+{
+	"name": "pkg-name",
+	"description": "Doing stuff.",
+	"version": "0.0.0",
+	"license": "MIT",
+	"private": true,
+	"main": "./src/index.ts",
+	"module": "./dist/esm/pkg-name.esm.js",
+	"browser": "./dist/browser/pkg-name.min.js",
+	"types": "./dist/esm/pkg-name.esm.d.ts",
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"dev": "npm run test:watch",
+		"play": "rollup --config rollup.playground.config.js --watch --bundleConfigAsCjs",
+		"prebuild": "rm -rf ./dist",
+		"build": "rollup --config rollup.prod.config.js --bundleConfigAsCjs",
+		"postbuild": "rm -rf ./dist/esm/temp-dts",
+		"test": "vitest run ./tests/index.spec.ts",
+		"test:watch": "vitest watch ./tests/index.spec.ts",
+		"lint": "npm run check:lint",
+		"checks": "npm run check:all",
+		"types": "npm run check:types",
+		"check:lint": "eslint ./src ./tests",
+		"check:types": "tsc --noEmit",
+		"check:all": "npm run check:lint && npm run check:types && npm test",
+		"preversion": "npm run check:all",
+		"version": "npm run build",
+		"postversion": "git push && git push --tags",
+		"prepublishOnly": "npm run check:all"
+	},
+	"devDependencies": {
+		"@rollup/plugin-node-resolve": "15.2.3",
+      "@rollup/plugin-terser": "0.4.4",
+      "@rollup/plugin-typescript": "11.1.6",
+      "@types/jsdom": "21.1.6",
+      "@typescript-eslint/eslint-plugin": "6.19.0",
+      "@typescript-eslint/parser": "6.19.0",
+      "@vitest/coverage-v8": "1.2.1",
+      "eslint": "8.56.0",
+      "jsdom": "24.0.0",
+      "rollup": "4.9.6",
+      "rollup-plugin-dts": "6.1.0",
+      "tslib": "2.6.2",
+      "typescript": "5.3.3",
+      "vitest": "1.2.1"
+	},
+	"keywords": [],
+	"homepage": "https://github.com/taitulism/pkg-name#readme",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/taitulism/pkg-name.git"
+	},
+	"author": {
+		"name": "Itai Tenenbaum",
+		"email": "taitu.dev@gmail.com",
+		"url": "https://github.com/taitulism"
+	}
+}
