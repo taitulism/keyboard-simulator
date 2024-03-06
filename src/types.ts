@@ -1,4 +1,4 @@
-import {EventKeyAndCode} from './key-codes';
+import {KeyMap, KeyAliases} from './key-codes';
 
 export type ContextElement = HTMLElement | Document
 
@@ -16,10 +16,13 @@ export const EventModifiers = {
 	Meta: 'metaKey',
 } as const;
 
-export type EventType = 'keydown' | 'keyup';
-export type DispatchCall = [KeyboardEvent];
-export type TAliases = keyof typeof EventKeyAndCode;
-export type TModifier = keyof typeof Modifiers;
-export type EventModifier = `${Lowercase<TModifier>}Key`;
-export type IsModifierDown = `is${TModifier}Down`;
+export type EventType = 'keydown' | 'keyup'
+export type DispatchCall = [KeyboardEvent]
+// export type TAliases = keyof typeof EventKeyAndCode
+export type KeyId = keyof typeof KeyMap
+export type KeyAlias = keyof typeof KeyAliases
+export type KeyName = KeyId | KeyAlias
+export type TModifier = keyof typeof Modifiers
+export type EventModifier = `${Lowercase<TModifier>}Key`
+export type IsModifierDown = `is${TModifier}Down`
 export const isModifier = (str: string): str is TModifier => str in Modifiers;

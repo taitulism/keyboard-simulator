@@ -1,12 +1,14 @@
-import {EventKeyAndCode} from './key-codes';
+import {KeyMap, KeyAliases} from './key-codes';
 import {
 	ContextElement,
 	IsModifierDown,
 	EventModifiers,
 	isModifier,
 	type EventType,
-	type TAliases,
 	type EventModifier,
+	KeyName,
+	KeyId,
+	KeyAlias,
 } from './types';
 
 const defaultEvent: KeyboardEventInit = {
@@ -17,12 +19,48 @@ const defaultEvent: KeyboardEventInit = {
 	repeat: false,
 };
 
+const getKeyValue = (keyId: KeyId, modifiers?: Array<EventModifier>) => {
+	const valueOrValues = KeyMap[keyId];
+
+	if (Array.isArray(valueOrValues)) {
+		return modifiers?.includes('shiftKey')
+			? valueOrValues[1]
+			: valueOrValues[0]
+		;
+	}
+	else {
+		return valueOrValues; // single value
+	}
+};
+
+// TODO:ts
+const getEventCodeAndKey = (keyName: KeyName, modifiers?: Array<EventModifier>) => {
+	let keyId: KeyName | undefined;
+
+	if (keyName in KeyAliases) {
+		keyId = KeyAliases[keyName as KeyAlias];
+	}
+	else if (!(keyName in KeyMap)) {
+		throw new Error(`Unknown key name: ${keyName.toString()}`);
+	}
+
+	keyId = (keyId ?? keyName) as KeyId;
+
+	const value = getKeyValue(keyId, modifiers);
+
+	return {code: keyId, key: value};
+};
+
 const keyBoardEventCreator = (eventType: EventType) => (
-	key: TAliases,
+	key: KeyName,
 	modifiers?: Array<EventModifier>,
 	repeat: boolean = false, // TODO: I don't like this. What about additional future props?
 ) => {
-	const ev: KeyboardEventInit = Object.assign({}, defaultEvent, {repeat}, EventKeyAndCode[key]);
+	const ev: KeyboardEventInit = Object.assign(
+		{},
+		defaultEvent,
+		{repeat},
+		getEventCodeAndKey(key, modifiers));
 
 	if (modifiers) {
 		modifiers.forEach((mod) => {
@@ -41,7 +79,7 @@ export class KeyboardSimulator {
 	private isAltDown = false;
 	private isShiftDown = false;
 	private isMetaDown = false;
-	private heldKeys: Array<TAliases> = [];
+	private heldKeys: Array<KeyName> = [];
 
 	constructor (public ctxElm: ContextElement = document) {}
 
@@ -58,7 +96,7 @@ export class KeyboardSimulator {
 	}
 
 	// TODO:test multiple keys & return
-	public keyDown (repeatOrKey: boolean | TAliases, ...keys: Array<TAliases>) {
+	public keyDown (repeatOrKey: boolean | KeyName, ...keys: Array<KeyName>) {
 		let _repeat: boolean;
 
 		if (typeof repeatOrKey === 'boolean') {
@@ -92,7 +130,7 @@ export class KeyboardSimulator {
 	}
 
 	// TODO:test multiple keys & return
-	public keyUp (...keys: Array<TAliases>) {
+	public keyUp (...keys: Array<KeyName>) {
 		return keys.map((key) => {
 			const modifiers: Array<EventModifier> = [];
 
@@ -117,14 +155,14 @@ export class KeyboardSimulator {
 	}
 
 	// TODO:test multi & return
-	public keyPress (...keys: Array<TAliases>) {
+	public keyPress (...keys: Array<KeyName>) {
 		return keys.map((key) => [
 			this.keyDown(key),
 			this.keyUp(key),
 		]);
 	}
 
-	public hold (...keys: Array<TAliases>) {
+	public hold (...keys: Array<KeyName>) {
 		this.heldKeys.push(...keys);
 
 		return keys.map((key) => [
@@ -132,7 +170,7 @@ export class KeyboardSimulator {
 		]);
 	}
 
-	public holdRepeat (key: TAliases, repeatCount: number) {
+	public holdRepeat (key: KeyName, repeatCount: number) {
 		if (this.heldKeys[this.heldKeys.length - 1] !== key) {
 			this.heldKeys.push(key);
 		}

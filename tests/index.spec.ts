@@ -12,10 +12,6 @@ describe('KeyboardSimulator', () => {
 		kbSim = new KeyboardSimulator(doc);
 	});
 
-	it('is ok', () => {
-		expect(KeyboardSimulator).to.be.a('function');
-	});
-
 	describe('instance methods', () => {
 		it('.keyDown()', () => {
 			expect(kbSim).toHaveProperty('keyDown');
