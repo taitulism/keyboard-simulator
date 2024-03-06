@@ -39,6 +39,16 @@ describe('Dispatching', () => {
 				expect(ev.type).to.equal('keydown');
 				expect(ev.repeat).to.equal(false);
 			});
+
+			it('Throws on unsupported key', () => {
+				const nonExistKey = () => {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					kbSim.keyDown('No Key');
+				};
+
+				expect(nonExistKey).toThrowError('Unknown key name: No Key');
+			});
 		});
 
 		describe('.keyUp()', () => {
@@ -52,6 +62,16 @@ describe('Dispatching', () => {
 				expect(ev.key).to.equal('a');
 				expect(ev.code).to.equal('KeyA');
 				expect(ev.type).to.equal('keyup');
+			});
+
+			it('Throws on unsupported key', () => {
+				const nonExistKey = () => {
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-expect-error
+					kbSim.keyUp('No Key');
+				};
+
+				expect(nonExistKey).toThrowError('Unknown key name: No Key');
 			});
 		});
 

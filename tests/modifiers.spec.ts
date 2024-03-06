@@ -25,7 +25,7 @@ describe('Modifiers', () => {
 		spy.mockRestore();
 	});
 
-	describe('Modifiersss', () => {
+	describe('Modifiers', () => {
 		describe('Ctrl', () => {
 			it('.keyDown(Ctrl)', () => {
 				expect(spy.mock.calls.length).to.equal(0);
