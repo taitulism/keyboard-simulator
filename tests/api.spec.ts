@@ -3,7 +3,7 @@ import {MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi}
 import {KeyboardSimulator} from '../src';
 import {extractLastEvent, extractTwoLastEvents} from './utils';
 
-describe('Dispatching', () => {
+describe('API', () => {
 	let doc: Document | undefined;
 	let spy: MockInstance<[event: Event], boolean>;
 	let kbSim: KeyboardSimulator;
@@ -40,6 +40,21 @@ describe('Dispatching', () => {
 				expect(ev.repeat).to.equal(false);
 			});
 
+			it('Handles multiple keys', () => {
+				kbSim.keyDown('Ctrl', 'A');
+				expect(spy.mock.calls.length).to.equal(2);
+
+				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+
+				expect(secondLastEv.key).to.equal('Control');
+				expect(secondLastEv.code).to.equal('ControlLeft');
+				expect(secondLastEv.type).to.equal('keydown');
+
+				expect(lastEv.key).to.equal('a');
+				expect(lastEv.code).to.equal('KeyA');
+				expect(lastEv.type).to.equal('keydown');
+			});
+
 			it('Throws on unsupported key', () => {
 				const nonExistKey = () => {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -49,19 +64,46 @@ describe('Dispatching', () => {
 
 				expect(nonExistKey).toThrowError('Unknown key name: No Key');
 			});
+
+			it('Throws when key is already down', () => {
+				const keyAlreadyDown = () => {
+					kbSim.keyDown('A');
+					kbSim.keyDown('A');
+				};
+
+				expect(keyAlreadyDown).toThrowError('"KeyA" is already pressed down');
+			});
 		});
 
 		describe('.keyUp()', () => {
 			it('Dispatches "keyup" event', () => {
-				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.keyUp('A');
+				kbSim.keyDown('A');
 				expect(spy.mock.calls.length).to.equal(1);
+				kbSim.keyUp('A');
+				expect(spy.mock.calls.length).to.equal(2);
 
 				const ev = extractLastEvent(spy);
 
 				expect(ev.key).to.equal('a');
 				expect(ev.code).to.equal('KeyA');
 				expect(ev.type).to.equal('keyup');
+			});
+
+			it('Handles multiple keys', () => {
+				kbSim.keyDown('Ctrl', 'A');
+				expect(spy.mock.calls.length).to.equal(2);
+				kbSim.keyUp('Ctrl', 'A');
+				expect(spy.mock.calls.length).to.equal(4);
+
+				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+
+				expect(secondLastEv.key).to.equal('Control');
+				expect(secondLastEv.code).to.equal('ControlLeft');
+				expect(secondLastEv.type).to.equal('keyup');
+
+				expect(lastEv.key).to.equal('a');
+				expect(lastEv.code).to.equal('KeyA');
+				expect(lastEv.type).to.equal('keyup');
 			});
 
 			it('Throws on unsupported key', () => {
@@ -72,6 +114,16 @@ describe('Dispatching', () => {
 				};
 
 				expect(nonExistKey).toThrowError('Unknown key name: No Key');
+			});
+
+			it('Throws when key is not down', () => {
+				const keyAlreadyUp = () => {
+					kbSim.keyDown('A');
+					kbSim.keyUp('A');
+					kbSim.keyUp('A');
+				};
+
+				expect(keyAlreadyUp).toThrowError('"KeyA" is not pressed down');
 			});
 		});
 
@@ -92,6 +144,33 @@ describe('Dispatching', () => {
 				expect(lastEv.type).to.equal('keyup');
 
 			});
+
+			it('Handles multiple keys', () => {
+				kbSim.keyPress('A', 'B');
+
+				const {calls} = spy.mock;
+
+				expect(calls.length).to.equal(4);
+
+				const [[ev1], [ev2], [ev3], [ev4]] = calls;
+
+				// TODO:ts
+				expect((ev1 as KeyboardEvent).key).to.equal('a');
+				expect((ev1 as KeyboardEvent).code).to.equal('KeyA');
+				expect((ev1 as KeyboardEvent).type).to.equal('keydown');
+
+				expect((ev2 as KeyboardEvent).key).to.equal('a');
+				expect((ev2 as KeyboardEvent).code).to.equal('KeyA');
+				expect((ev2 as KeyboardEvent).type).to.equal('keyup');
+
+				expect((ev3 as KeyboardEvent).key).to.equal('b');
+				expect((ev3 as KeyboardEvent).code).to.equal('KeyB');
+				expect((ev3 as KeyboardEvent).type).to.equal('keydown');
+
+				expect((ev4 as KeyboardEvent).key).to.equal('b');
+				expect((ev4 as KeyboardEvent).code).to.equal('KeyB');
+				expect((ev4 as KeyboardEvent).type).to.equal('keyup');
+			});
 		});
 
 		describe('.holdKey()', () => {
@@ -107,50 +186,14 @@ describe('Dispatching', () => {
 				expect(ev.type).to.equal('keydown');
 				expect(ev.repeat).to.equal(true);
 			});
-		});
 
-		describe('.hold()', () => {
-			it('Dispatches "keydown" event', () => {
-				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.keyDown('A');
-				expect(spy.mock.calls.length).to.equal(1);
+			it('Throws when key is already down', () => {
+				const keyAlreadyDown = () => {
+					kbSim.keyDown('A');
+					kbSim.holdKey('A', 2);
+				};
 
-				const ev = extractLastEvent(spy);
-
-				expect(ev.key).to.equal('a');
-				expect(ev.code).to.equal('KeyA');
-				expect(ev.type).to.equal('keydown');
-			});
-
-			it('Handles multiple keys', () => {
-				kbSim.keyDown('Ctrl', 'A');
-				expect(spy.mock.calls.length).to.equal(2);
-
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
-
-				expect(secondLastEv.key).to.equal('Control');
-				expect(secondLastEv.code).to.equal('ControlLeft');
-				expect(secondLastEv.type).to.equal('keydown');
-
-				expect(lastEv.key).to.equal('a');
-				expect(lastEv.code).to.equal('KeyA');
-				expect(lastEv.type).to.equal('keydown');
-			});
-
-			it('Accumulates sequencing calls', () => {
-				kbSim.keyDown('Ctrl');
-				kbSim.keyDown('A');
-				kbSim.releaseAll();
-
-				expect(spy.mock.calls.length).to.equal(4);
-
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
-
-				expect(secondLastEv.key).to.equal('a');
-				expect(secondLastEv.type).to.equal('keyup');
-
-				expect(lastEv.key).to.equal('Control');
-				expect(lastEv.type).to.equal('keyup');
+				expect(keyAlreadyDown).toThrowError('"KeyA" is already pressed down');
 			});
 		});
 

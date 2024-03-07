@@ -38,8 +38,17 @@ export class KeyboardSimulator {
 	private isAltDown = false;
 	private isShiftDown = false;
 	private isMetaDown = false;
-	// TODO: Use Set instead to avoid dups
-	private heldKeys: Array<KeyName> = [];
+	private heldKeys = new Set<KeyName>();
+
+	private followKey (key: KeyId) {
+		if (this.heldKeys.has(key)) throw new Error(`The key "${key}" is already pressed down.`);
+		this.heldKeys.add(key);
+	}
+
+	private unfollowKey (key: KeyId) {
+		if (!this.heldKeys.has(key)) throw new Error(`The key "${key}" is not pressed down.`);
+		this.heldKeys.delete(key);
+	}
 
 	// TODO:! not sure about one ctx per instance. Same keyboard can be used in multi ctx
 	constructor (public ctxElm: ContextElement = document) {}
@@ -49,7 +58,7 @@ export class KeyboardSimulator {
 		this.isAltDown = false;
 		this.isShiftDown = false;
 		this.isMetaDown = false;
-		this.heldKeys = [];
+		this.heldKeys.clear();
 	}
 
 	private toggleModifier (key: Modifier, isPressed: boolean = false) {
@@ -66,8 +75,7 @@ export class KeyboardSimulator {
 		return keys.map((keyName) => {
 			const keyId = getKeyId(keyName);
 
-			this.heldKeys.push(keyId);
-
+			this.followKey(keyId);
 			if (isModifier(keyId)) this.toggleModifier(keyId, true);
 
 			const keyDownEvent = this.createKeyboardEvent('keydown', keyId);
@@ -81,6 +89,7 @@ export class KeyboardSimulator {
 		return keys.map((keyName) => {
 			const keyId = getKeyId(keyName);
 
+			this.unfollowKey(keyId);
 			if (isModifier(keyId)) this.toggleModifier(keyId, false);
 
 			const keyUpEvent = this.createKeyboardEvent('keyup', keyId);
@@ -119,7 +128,7 @@ export class KeyboardSimulator {
 	public holdKey (keyName: KeyName, repeatCount: number) {
 		const keyId = getKeyId(keyName);
 
-		this.heldKeys.push(keyId);
+		this.followKey(keyId);
 
 		if (isModifier(keyId)) this.toggleModifier(keyId, true);
 
@@ -134,12 +143,14 @@ export class KeyboardSimulator {
 	}
 
 	public releaseAll () {
-		const keys = this.heldKeys;
+		const dispatches: Array<boolean> = [];
 
-		this.heldKeys = [];
+		Array.from(this.heldKeys).reverse().forEach((key) => {
+			dispatches.push(...this.keyUp(key));
+		});
 
-		return keys.reverse().map((key) => [
-			this.keyUp(key),
-		]);
+		this.heldKeys.clear();
+
+		return dispatches;
 	}
 }

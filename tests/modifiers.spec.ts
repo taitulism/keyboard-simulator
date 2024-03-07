@@ -43,9 +43,10 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyUp(Ctrl)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.keyUp('Ctrl');
+				kbSim.keyDown('Ctrl');
 				expect(spy.mock.calls.length).to.equal(1);
+				kbSim.keyUp('Ctrl');
+				expect(spy.mock.calls.length).to.equal(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -90,9 +91,10 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyUp(Alt)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.keyUp('Alt');
+				kbSim.keyDown('Alt');
 				expect(spy.mock.calls.length).to.equal(1);
+				kbSim.keyUp('Alt');
+				expect(spy.mock.calls.length).to.equal(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -137,9 +139,10 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyUp(Shift)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.keyUp('Shift');
+				kbSim.keyDown('Shift');
 				expect(spy.mock.calls.length).to.equal(1);
+				kbSim.keyUp('Shift');
+				expect(spy.mock.calls.length).to.equal(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -184,9 +187,10 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyUp(Meta)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.keyUp('Meta');
+				kbSim.keyDown('Meta');
 				expect(spy.mock.calls.length).to.equal(1);
+				kbSim.keyUp('Meta');
+				expect(spy.mock.calls.length).to.equal(2);
 
 				const ev = extractLastEvent(spy);
 
