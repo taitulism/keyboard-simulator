@@ -5,8 +5,10 @@ import {
 	isModifier,
 	KeyName,
 	KeyId,
-	KeyAlias,
 	Modifier,
+	Modifiers,
+	isKeyId,
+	isAlias,
 } from './types';
 
 const getKeyValue = (keyId: KeyId, withShift: boolean) => {
@@ -23,18 +25,12 @@ const getKeyValue = (keyId: KeyId, withShift: boolean) => {
 	}
 };
 
-// TODO:ts
-const getKeyId = (keyName: KeyName) => {
-	let keyId: KeyId | undefined;
+const getKeyId = (keyName: KeyName): KeyId => {
+	if (isKeyId(keyName)) return keyName;
+	if (isAlias(keyName)) return KeyAliases[keyName];
 
-	if (keyName in KeyAliases) {
-		keyId = KeyAliases[keyName as KeyAlias];
-	}
-	else if (!(keyName in KeyMap)) {
-		throw new Error(`Unknown key name: ${keyName.toString()}`);
-	}
-
-	return (keyId ?? keyName) as KeyId;
+	// TODO:ts
+	throw new Error(`Unknown key name: ${(keyName as string).toString()}`);
 };
 
 export class KeyboardSimulator {
@@ -48,10 +44,6 @@ export class KeyboardSimulator {
 	// TODO:! not sure about one ctx per instance. Same keyboard can be used in multi ctx
 	constructor (public ctxElm: ContextElement = document) {}
 
-	private get withModifiers () {
-		return this.isCtrlDown || this.isAltDown || this.isShiftDown || this.isMetaDown;
-	}
-
 	public reset () {
 		this.isCtrlDown = false;
 		this.isAltDown = false;
@@ -60,21 +52,25 @@ export class KeyboardSimulator {
 		this.heldKeys = [];
 	}
 
-	private toggleModifier (key: Modifier, isDown: boolean = false) {
-		if (key === 'Ctrl') this.isCtrlDown = isDown;
-		else if (key === 'Alt') this.isAltDown = isDown;
-		else if (key === 'Shift') this.isShiftDown = isDown;
-		else if (key === 'Meta') this.isMetaDown = isDown;
+	private toggleModifier (key: Modifier, isPressed: boolean = false) {
+		const modifier = Modifiers[key];
+
+		if (modifier === 'Ctrl') this.isCtrlDown = isPressed;
+		else if (modifier === 'Alt') this.isAltDown = isPressed;
+		else if (modifier === 'Shift') this.isShiftDown = isPressed;
+		else if (modifier === 'Meta') this.isMetaDown = isPressed;
 	}
 
 	// TODO:test multiple keys & return
 	public keyDown (...keys: Array<KeyName>) {
-		this.heldKeys.push(...keys);
+		return keys.map((keyName) => {
+			const keyId = getKeyId(keyName);
 
-		return keys.map((key) => {
-			if (isModifier(key)) this.toggleModifier(key, true);
+			this.heldKeys.push(keyId);
 
-			const keyDownEvent = this.createKeyboardEvent('keydown', key);
+			if (isModifier(keyId)) this.toggleModifier(keyId, true);
+
+			const keyDownEvent = this.createKeyboardEvent('keydown', keyId);
 
 			return this.ctxElm.dispatchEvent(keyDownEvent);
 		});
@@ -82,10 +78,12 @@ export class KeyboardSimulator {
 
 	// TODO:test multiple keys & return
 	public keyUp (...keys: Array<KeyName>) {
-		return keys.map((key) => {
-			if (isModifier(key)) this.toggleModifier(key, false);
+		return keys.map((keyName) => {
+			const keyId = getKeyId(keyName);
 
-			const keyUpEvent = this.createKeyboardEvent('keyup', key);
+			if (isModifier(keyId)) this.toggleModifier(keyId, false);
+
+			const keyUpEvent = this.createKeyboardEvent('keyup', keyId);
 
 			return this.ctxElm.dispatchEvent(keyUpEvent);
 		});
@@ -118,12 +116,14 @@ export class KeyboardSimulator {
 	}
 
 	// TODO:test more
-	public holdKey (key: KeyName, repeatCount: number) {
-		this.heldKeys.push(key);
+	public holdKey (keyName: KeyName, repeatCount: number) {
+		const keyId = getKeyId(keyName);
 
-		if (isModifier(key)) this.toggleModifier(key, true);
+		this.heldKeys.push(keyId);
 
-		const keyDownEvent = this.createKeyboardEvent('keydown', key, true);
+		if (isModifier(keyId)) this.toggleModifier(keyId, true);
+
+		const keyDownEvent = this.createKeyboardEvent('keydown', keyId, true);
 		const dispatches = [];
 
 		for (let i = 0; i < repeatCount; i++) {
