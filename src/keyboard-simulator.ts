@@ -60,7 +60,8 @@ const keyBoardEventCreator = (eventType: EventType) => (
 		{},
 		defaultEvent,
 		{repeat},
-		getEventCodeAndKey(key, modifiers));
+		getEventCodeAndKey(key, modifiers),
+	);
 
 	if (modifiers) {
 		modifiers.forEach((mod) => {
@@ -106,6 +107,8 @@ export class KeyboardSimulator {
 			keys.unshift(repeatOrKey);
 		}
 
+		this.heldKeys.push(...keys);
+
 		return keys.map((key) => {
 			const modifiers: Array<EventModifier> = [];
 
@@ -137,9 +140,9 @@ export class KeyboardSimulator {
 			if (this.isModifierDown()) {
 				if (isModifier(key)) {
 					if (key === 'Ctrl') this.isCtrlDown = false;
-					if (key === 'Alt') this.isAltDown = false;
-					if (key === 'Shift') this.isShiftDown = false;
-					if (key === 'Meta') this.isMetaDown = false;
+					else if (key === 'Alt') this.isAltDown = false;
+					else if (key === 'Shift') this.isShiftDown = false;
+					else if (key === 'Meta') this.isMetaDown = false;
 				}
 
 				if (this.isCtrlDown) modifiers.push(EventModifiers.Ctrl);
@@ -162,14 +165,6 @@ export class KeyboardSimulator {
 		]);
 	}
 
-	public hold (...keys: Array<KeyName>) {
-		this.heldKeys.push(...keys);
-
-		return keys.map((key) => [
-			this.keyDown(key),
-		]);
-	}
-
 	public holdRepeat (key: KeyName, repeatCount: number) {
 		if (this.heldKeys[this.heldKeys.length - 1] !== key) {
 			this.heldKeys.push(key);
@@ -180,7 +175,7 @@ export class KeyboardSimulator {
 		}
 	}
 
-	public release () {
+	public releaseAll () {
 		const keys = this.heldKeys;
 
 		this.heldKeys = [];

@@ -43,6 +43,7 @@ describe('Supported Keys', () => {
 				expect(ev.code).to.equal(`Key${letter}`); // e.g. 'KeyA'
 				expect(ev.key).to.equal(letter.toLowerCase());
 
+				kbSim.reset();
 				spy.mockReset();
 			});
 		});
@@ -62,6 +63,7 @@ describe('Supported Keys', () => {
 				expect(ev.code).to.equal(`Num${number}`); // e.g. 'Num1'
 				expect(ev.key).to.equal(number.toLowerCase());
 
+				kbSim.reset();
 				spy.mockReset();
 			});
 		});
@@ -93,6 +95,7 @@ describe('Supported Keys', () => {
 				expect(ev.code).to.equal(code);
 				expect(ev.key).to.equal(key);
 
+				kbSim.reset();
 				spy.mockReset();
 			});
 		});
@@ -124,6 +127,7 @@ describe('Supported Keys', () => {
 				expect(ev.code).to.equal(code);
 				expect(ev.key).to.equal(key);
 
+				kbSim.reset();
 				spy.mockReset();
 			});
 		});

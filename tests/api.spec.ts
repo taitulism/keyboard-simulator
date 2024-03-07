@@ -112,7 +112,7 @@ describe('Dispatching', () => {
 		describe('.hold()', () => {
 			it('Dispatches "keydown" event', () => {
 				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.hold('A');
+				kbSim.keyDown('A');
 				expect(spy.mock.calls.length).to.equal(1);
 
 				const ev = extractLastEvent(spy);
@@ -123,7 +123,7 @@ describe('Dispatching', () => {
 			});
 
 			it('Handles multiple keys', () => {
-				kbSim.hold('Ctrl', 'A');
+				kbSim.keyDown('Ctrl', 'A');
 				expect(spy.mock.calls.length).to.equal(2);
 
 				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
@@ -138,9 +138,9 @@ describe('Dispatching', () => {
 			});
 
 			it('Accumulates sequencing calls', () => {
-				kbSim.hold('Ctrl');
-				kbSim.hold('A');
-				kbSim.release();
+				kbSim.keyDown('Ctrl');
+				kbSim.keyDown('A');
+				kbSim.releaseAll();
 
 				expect(spy.mock.calls.length).to.equal(4);
 
@@ -154,12 +154,12 @@ describe('Dispatching', () => {
 			});
 		});
 
-		describe('.release()', () => {
+		describe('.releaseAll()', () => {
 			it('Dispatches "keyup" event', () => {
-				kbSim.hold('A');
+				kbSim.keyDown('A');
 				expect(spy.mock.calls.length).to.equal(1);
 
-				kbSim.release();
+				kbSim.releaseAll();
 				expect(spy.mock.calls.length).to.equal(2);
 
 				const ev = extractLastEvent(spy);
@@ -170,10 +170,10 @@ describe('Dispatching', () => {
 			});
 
 			it('Releases all held keys in reverse order', () => {
-				kbSim.hold('A', 'B', 'C');
+				kbSim.keyDown('A', 'B', 'C');
 				expect(spy.mock.calls.length).to.equal(3);
 
-				kbSim.release();
+				kbSim.releaseAll();
 				expect(spy.mock.calls.length).to.equal(6);
 
 				const ev = extractLastEvent(spy);
@@ -182,45 +182,76 @@ describe('Dispatching', () => {
 				expect(ev.code).to.equal('KeyA');
 				expect(ev.type).to.equal('keyup');
 			});
+
+			it('Releases Modifiers', () => {
+				// Without `Ctrl`
+				kbSim.keyDown('A');
+
+				const ev1 = extractLastEvent(spy);
+
+				expect(ev1.key).to.equal('a');
+				expect(ev1.ctrlKey).to.false; // <--
+
+				kbSim.keyUp('A');
+
+				// With `Ctrl`
+				kbSim.keyDown('Ctrl', 'A');
+
+				const ev2 = extractLastEvent(spy);
+
+				expect(ev2.key).to.equal('a');
+				expect(ev2.ctrlKey).to.true; // <--
+
+				kbSim.releaseAll(); // Should release `Ctrl`
+
+				// Without `Ctrl`
+				kbSim.keyDown('A');
+
+				const ev3 = extractLastEvent(spy);
+
+				expect(ev3.key).to.equal('a');
+				expect(ev3.ctrlKey).to.false; // <--
+			});
 		});
 	});
 
 	describe('.reset()', () => {
 		it('Resets pressed modifiers', () => {
-			kbSim.keyDown('Ctrl');
-			kbSim.keyDown('A');
+			kbSim.keyDown('Ctrl', 'A');
 
 			let ev = extractLastEvent(spy);
 
 			expect(ev.key).to.equal('a');
 			expect(ev.ctrlKey).to.true; // <--
 
-			kbSim.keyDown('A');
+			kbSim.keyUp('A');
+			kbSim.keyDown('B');
+
 			ev = extractLastEvent(spy);
-			expect(ev.key).to.equal('a');
+			expect(ev.key).to.equal('b');
 			expect(ev.ctrlKey).to.true; // <--
 
+			kbSim.keyUp('B');
 			kbSim.reset();
+			kbSim.keyDown('C');
 
-			kbSim.keyDown('A');
 			ev = extractLastEvent(spy);
-			expect(ev.key).to.equal('a');
+			expect(ev.key).to.equal('c');
 			expect(ev.ctrlKey).to.false; // <--
-
 		});
 
 		it('Resets held keys', () => {
-			kbSim.hold('A', 'B', 'C');
+			kbSim.keyDown('A', 'B', 'C');
 			expect(spy.mock.calls.length).to.equal(3);
-			kbSim.release();
+			kbSim.releaseAll();
 			expect(spy.mock.calls.length).to.equal(6);
 
 			spy.mockReset();
 
-			kbSim.hold('A', 'B', 'C');
+			kbSim.keyDown('A', 'B', 'C');
 			expect(spy.mock.calls.length).to.equal(3);
 			kbSim.reset();
-			kbSim.release();
+			kbSim.releaseAll();
 			expect(spy.mock.calls.length).to.equal(3);
 		});
 	});

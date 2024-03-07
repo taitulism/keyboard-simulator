@@ -25,6 +25,8 @@ describe('Alternative Values', () => {
 		spy.mockRestore();
 	});
 
+	describe.todo('When `Numlock` is ON');
+
 	describe('When holding `Shift`', () => {
 		it('Letters', () => {
 			const letters = [
@@ -40,10 +42,11 @@ describe('Alternative Values', () => {
 				const ev = extractLastEvent(spy);
 
 				expect(ev.key).to.equal(letter.toLowerCase());
+				kbSim.keyUp(letter);
 			});
 
 			// With `Shift`
-			kbSim.hold('Shift');
+			kbSim.keyDown('Shift');
 
 			letters.forEach((letter) => {
 				kbSim.keyDown(letter);
@@ -51,9 +54,8 @@ describe('Alternative Values', () => {
 				const ev = extractLastEvent(spy);
 
 				expect(ev.key).to.equal(letter);
+				kbSim.keyUp(letter);
 			});
-
-			kbSim.release();
 		});
 
 		it('Numbers', () => {
@@ -77,10 +79,11 @@ describe('Alternative Values', () => {
 				const ev = extractLastEvent(spy);
 
 				expect(ev.key).to.equal(number);
+				kbSim.keyUp(number);
 			});
 
 			// With `Shift`
-			kbSim.hold('Shift');
+			kbSim.keyDown('Shift');
 
 			numbers.forEach((symbol, number) => {
 				kbSim.keyDown(number);
@@ -88,9 +91,8 @@ describe('Alternative Values', () => {
 				const ev = extractLastEvent(spy);
 
 				expect(ev.key).to.equal(symbol);
+				kbSim.keyUp(number);
 			});
-
-			kbSim.release();
 		});
 
 		it('Other Characters', () => {
@@ -115,10 +117,11 @@ describe('Alternative Values', () => {
 				const ev = extractLastEvent(spy);
 
 				expect(ev.key).to.equal(value);
+				kbSim.keyUp(keyName);
 			});
 
 			// With `Shift`
-			kbSim.hold('Shift');
+			kbSim.keyDown('Shift');
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			chars.forEach(([value, alternativeValue], keyName) => {
@@ -127,9 +130,8 @@ describe('Alternative Values', () => {
 				const ev = extractLastEvent(spy);
 
 				expect(ev.key).to.equal(alternativeValue);
+				kbSim.keyUp(keyName);
 			});
-
-			kbSim.release();
 		});
 	});
 });

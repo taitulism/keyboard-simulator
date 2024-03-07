@@ -18,11 +18,11 @@ export const EventModifiers = {
 
 export type EventType = 'keydown' | 'keyup'
 export type DispatchCall = [KeyboardEvent]
-// export type TAliases = keyof typeof EventKeyAndCode
 export type KeyId = keyof typeof KeyMap
 export type KeyAlias = keyof typeof KeyAliases
 export type KeyName = KeyId | KeyAlias
 export type TModifier = keyof typeof Modifiers
 export type EventModifier = `${Lowercase<TModifier>}Key`
 export type IsModifierDown = `is${TModifier}Down`
+
 export const isModifier = (str: string): str is TModifier => str in Modifiers;

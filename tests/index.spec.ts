@@ -28,19 +28,14 @@ describe('KeyboardSimulator', () => {
 			expect(kbSim.reset).to.be.a('function');
 		});
 
-		it('.hold()', () => {
-			expect(kbSim).toHaveProperty('hold');
-			expect(kbSim.hold).to.be.a('function');
-		});
-
 		it('.holdRepeat()', () => {
 			expect(kbSim).toHaveProperty('holdRepeat');
-			expect(kbSim.hold).to.be.a('function');
+			expect(kbSim.holdRepeat).to.be.a('function');
 		});
 
-		it('.release()', () => {
-			expect(kbSim).toHaveProperty('release');
-			expect(kbSim.release).to.be.a('function');
+		it('.releaseAll()', () => {
+			expect(kbSim).toHaveProperty('releaseAll');
+			expect(kbSim.releaseAll).to.be.a('function');
 		});
 	});
 });
