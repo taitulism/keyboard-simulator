@@ -94,10 +94,10 @@ describe('Dispatching', () => {
 			});
 		});
 
-		describe('.holdRepeat()', () => {
+		describe('.holdKey()', () => {
 			it('Dispatches "keydown" event with `repeat: true`', () => {
 				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.holdRepeat('A', 3);
+				kbSim.holdKey('A', 3);
 				expect(spy.mock.calls.length).to.equal(3);
 
 				const ev = extractLastEvent(spy);

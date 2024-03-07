@@ -1,29 +1,19 @@
 import {KeyMap, KeyAliases} from './key-codes';
 import {
-	ContextElement,
-	IsModifierDown,
-	EventModifiers,
-	isModifier,
 	type EventType,
-	type EventModifier,
+	ContextElement,
+	isModifier,
 	KeyName,
 	KeyId,
 	KeyAlias,
+	Modifier,
 } from './types';
 
-const defaultEvent: KeyboardEventInit = {
-	ctrlKey: false,
-	altKey: false,
-	shiftKey: false,
-	metaKey: false,
-	repeat: false,
-};
-
-const getKeyValue = (keyId: KeyId, modifiers?: Array<EventModifier>) => {
+const getKeyValue = (keyId: KeyId, withShift: boolean) => {
 	const valueOrValues = KeyMap[keyId];
 
 	if (Array.isArray(valueOrValues)) {
-		return modifiers?.includes('shiftKey')
+		return withShift
 			? valueOrValues[1]
 			: valueOrValues[0]
 		;
@@ -34,8 +24,8 @@ const getKeyValue = (keyId: KeyId, modifiers?: Array<EventModifier>) => {
 };
 
 // TODO:ts
-const getEventCodeAndKey = (keyName: KeyName, modifiers?: Array<EventModifier>) => {
-	let keyId: KeyName | undefined;
+const getKeyId = (keyName: KeyName) => {
+	let keyId: KeyId | undefined;
 
 	if (keyName in KeyAliases) {
 		keyId = KeyAliases[keyName as KeyAlias];
@@ -44,47 +34,21 @@ const getEventCodeAndKey = (keyName: KeyName, modifiers?: Array<EventModifier>) 
 		throw new Error(`Unknown key name: ${keyName.toString()}`);
 	}
 
-	keyId = (keyId ?? keyName) as KeyId;
-
-	const value = getKeyValue(keyId, modifiers);
-
-	return {code: keyId, key: value};
+	return (keyId ?? keyName) as KeyId;
 };
-
-const keyBoardEventCreator = (eventType: EventType) => (
-	key: KeyName,
-	modifiers?: Array<EventModifier>,
-	repeat: boolean = false, // TODO: I don't like this. What about additional future props?
-) => {
-	const ev: KeyboardEventInit = Object.assign(
-		{},
-		defaultEvent,
-		{repeat},
-		getEventCodeAndKey(key, modifiers),
-	);
-
-	if (modifiers) {
-		modifiers.forEach((mod) => {
-			ev[mod] = true;
-		});
-	}
-
-	return new KeyboardEvent(eventType, ev);
-};
-
-const createKeyDownEvent = keyBoardEventCreator('keydown');
-const createKeyUpEvent = keyBoardEventCreator('keyup');
 
 export class KeyboardSimulator {
 	private isCtrlDown = false;
 	private isAltDown = false;
 	private isShiftDown = false;
 	private isMetaDown = false;
+	// TODO: Use Set instead to avoid dups
 	private heldKeys: Array<KeyName> = [];
 
+	// TODO:! not sure about one ctx per instance. Same keyboard can be used in multi ctx
 	constructor (public ctxElm: ContextElement = document) {}
 
-	private isModifierDown () {
+	private get withModifiers () {
 		return this.isCtrlDown || this.isAltDown || this.isShiftDown || this.isMetaDown;
 	}
 
@@ -96,37 +60,21 @@ export class KeyboardSimulator {
 		this.heldKeys = [];
 	}
 
+	private toggleModifier (key: Modifier, isDown: boolean = false) {
+		if (key === 'Ctrl') this.isCtrlDown = isDown;
+		else if (key === 'Alt') this.isAltDown = isDown;
+		else if (key === 'Shift') this.isShiftDown = isDown;
+		else if (key === 'Meta') this.isMetaDown = isDown;
+	}
+
 	// TODO:test multiple keys & return
-	public keyDown (repeatOrKey: boolean | KeyName, ...keys: Array<KeyName>) {
-		let _repeat: boolean;
-
-		if (typeof repeatOrKey === 'boolean') {
-			_repeat = repeatOrKey;
-		}
-		else {
-			keys.unshift(repeatOrKey);
-		}
-
+	public keyDown (...keys: Array<KeyName>) {
 		this.heldKeys.push(...keys);
 
 		return keys.map((key) => {
-			const modifiers: Array<EventModifier> = [];
+			if (isModifier(key)) this.toggleModifier(key, true);
 
-			if (isModifier(key)) {
-				const holdModifierDown = (`is${key}Down`) as IsModifierDown;
-
-				this[holdModifierDown] = true;
-				modifiers.push(EventModifiers[key]);
-			}
-
-			if (this.isModifierDown()) {
-				if (this.isCtrlDown) modifiers.push(EventModifiers.Ctrl);
-				if (this.isAltDown) modifiers.push(EventModifiers.Alt);
-				if (this.isShiftDown) modifiers.push(EventModifiers.Shift);
-				if (this.isMetaDown) modifiers.push(EventModifiers.Meta);
-			}
-
-			const keyDownEvent = createKeyDownEvent(key, modifiers, _repeat);
+			const keyDownEvent = this.createKeyboardEvent('keydown', key);
 
 			return this.ctxElm.dispatchEvent(keyDownEvent);
 		});
@@ -135,23 +83,9 @@ export class KeyboardSimulator {
 	// TODO:test multiple keys & return
 	public keyUp (...keys: Array<KeyName>) {
 		return keys.map((key) => {
-			const modifiers: Array<EventModifier> = [];
+			if (isModifier(key)) this.toggleModifier(key, false);
 
-			if (this.isModifierDown()) {
-				if (isModifier(key)) {
-					if (key === 'Ctrl') this.isCtrlDown = false;
-					else if (key === 'Alt') this.isAltDown = false;
-					else if (key === 'Shift') this.isShiftDown = false;
-					else if (key === 'Meta') this.isMetaDown = false;
-				}
-
-				if (this.isCtrlDown) modifiers.push(EventModifiers.Ctrl);
-				if (this.isAltDown) modifiers.push(EventModifiers.Alt);
-				if (this.isShiftDown) modifiers.push(EventModifiers.Shift);
-				if (this.isMetaDown) modifiers.push(EventModifiers.Meta);
-			}
-
-			const keyUpEvent = createKeyUpEvent(key, modifiers);
+			const keyUpEvent = this.createKeyboardEvent('keyup', key);
 
 			return this.ctxElm.dispatchEvent(keyUpEvent);
 		});
@@ -165,14 +99,38 @@ export class KeyboardSimulator {
 		]);
 	}
 
-	public holdRepeat (key: KeyName, repeatCount: number) {
-		if (this.heldKeys[this.heldKeys.length - 1] !== key) {
-			this.heldKeys.push(key);
-		}
+	private createKeyboardEvent (
+		eventType: EventType,
+		keyName: KeyName,
+		repeat: boolean = false, // TODO: I don't like this. What about additional future props?
+	) {
+		const keyId = getKeyId(keyName);
+
+		return new KeyboardEvent(eventType, {
+			code: keyId,
+			key: getKeyValue(keyId, this.isShiftDown),
+			ctrlKey: this.isCtrlDown,
+			altKey: this.isAltDown,
+			shiftKey: this.isShiftDown,
+			metaKey: this.isMetaDown,
+			repeat,
+		});
+	}
+
+	// TODO:test more
+	public holdKey (key: KeyName, repeatCount: number) {
+		this.heldKeys.push(key);
+
+		if (isModifier(key)) this.toggleModifier(key, true);
+
+		const keyDownEvent = this.createKeyboardEvent('keydown', key, true);
+		const dispatches = [];
 
 		for (let i = 0; i < repeatCount; i++) {
-			this.keyDown(true, key);
+			dispatches.push(this.ctxElm.dispatchEvent(keyDownEvent));
 		}
+
+		return dispatches;
 	}
 
 	public releaseAll () {
