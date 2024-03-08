@@ -1,2 +1,2 @@
-export {KeyboardSimulator} from './keyboard-simulator';
-export * from './types';
+export * from './keyboard-simulator';
+export * from './key-codes';

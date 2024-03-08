@@ -1,37 +1,15 @@
-import {KeyMap, KeyAliases} from './key-codes';
 import {
-	type EventType,
-	ContextElement,
+	type KeyName,
+	type KeyId,
+	type Modifier,
 	isModifier,
-	KeyName,
-	KeyId,
-	Modifier,
 	Modifiers,
-	isKeyId,
-	isAlias,
-} from './types';
+	getKeyId,
+	getKeyValue,
+} from './key-codes';
 
-const getKeyValue = (keyId: KeyId, withShift: boolean) => {
-	const valueOrValues = KeyMap[keyId];
-
-	if (Array.isArray(valueOrValues)) {
-		return withShift
-			? valueOrValues[1]
-			: valueOrValues[0]
-		;
-	}
-	else {
-		return valueOrValues; // single value
-	}
-};
-
-const getKeyId = (keyName: KeyName): KeyId => {
-	if (isKeyId(keyName)) return keyName;
-	if (isAlias(keyName)) return KeyAliases[keyName];
-
-	// TODO:ts
-	throw new Error(`Unknown key name: ${(keyName as string).toString()}`);
-};
+export type ContextElement = HTMLElement | Document
+export type EventType = 'keydown' | 'keyup'
 
 export class KeyboardSimulator {
 	private isCtrlDown = false;

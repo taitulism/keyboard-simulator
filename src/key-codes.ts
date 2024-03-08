@@ -1,3 +1,45 @@
+export type Modifier = keyof typeof Modifiers
+export type KeyId = keyof typeof KeyMap
+export type KeyAlias = keyof typeof KeyAliases
+export type KeyName = KeyId | KeyAlias
+
+export const isKeyId = (key: KeyName): key is KeyId => key in KeyMap;
+export const isAlias = (key: KeyName): key is KeyAlias => key in KeyAliases;
+export const isModifier = (str: string): str is Modifier => str in Modifiers;
+
+export const getKeyValue = (keyId: KeyId, withShift: boolean) => {
+	// value = single or array
+	const value = KeyMap[keyId];
+
+	if (Array.isArray(value)) {
+		return withShift
+			? value[1]
+			: value[0]
+		;
+	}
+
+	return value;
+};
+
+export const getKeyId = (keyName: KeyName): KeyId => {
+	if (isKeyId(keyName)) return keyName;
+	if (isAlias(keyName)) return KeyAliases[keyName];
+
+	// TODO:ts
+	throw new Error(`Unknown key name: ${(keyName as string).toString()}`);
+};
+
+export const Modifiers = {
+	ControlLeft: 'Ctrl',
+	ControlRight: 'Ctrl',
+	AltLeft: 'Alt',
+	AltRight: 'Alt',
+	ShiftLeft: 'Shift',
+	ShiftRight: 'Shift',
+	MetaLeft: 'Meta',
+	MetaRight: 'Meta',
+} as const;
+
 export const KeyMap = {
 	// Letters
 	KeyA: ['a', 'A'],
@@ -146,6 +188,7 @@ export const KeyMap = {
 	Escape: 'Escape',
 } as const;
 
+/* ======================================================= */
 
 export const KeyAliases = {
 	// Letters

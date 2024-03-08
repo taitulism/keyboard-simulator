@@ -1,5 +1,6 @@
 import {MockInstance, expect} from 'vitest';
-import {DispatchCall} from '../src/types';
+
+type DispatchCall = [KeyboardEvent]
 
 const assertDispatchCall = (dispatchCall: unknown): dispatchCall is DispatchCall | never => {
 	expect((dispatchCall as [unknown])[0]).toBeInstanceOf(KeyboardEvent);
