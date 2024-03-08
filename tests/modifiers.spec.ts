@@ -1,7 +1,7 @@
 import {JSDOM} from 'jsdom';
 import {MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {KeyboardSimulator} from '../src';
-import {extractLastEvent, extractTwoLastEvents} from './utils';
+import {extractLastEvent, extractLastEvents} from './utils';
 
 describe('Modifiers', () => {
 	let doc: Document | undefined;
@@ -63,7 +63,7 @@ describe('Modifiers', () => {
 				kbSim.keyPress('Ctrl');
 				expect(spy.mock.calls.length).to.equal(2);
 
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
 				expect(secondLastEv.key).to.equal('Control');
 				expect(secondLastEv.code).to.equal('ControlLeft');
@@ -111,7 +111,7 @@ describe('Modifiers', () => {
 				kbSim.keyPress('Alt');
 				expect(spy.mock.calls.length).to.equal(2);
 
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
 				expect(secondLastEv.key).to.equal('Alt');
 				expect(secondLastEv.code).to.equal('AltLeft');
@@ -159,7 +159,7 @@ describe('Modifiers', () => {
 				kbSim.keyPress('Shift');
 				expect(spy.mock.calls.length).to.equal(2);
 
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
 				expect(secondLastEv.key).to.equal('Shift');
 				expect(secondLastEv.code).to.equal('ShiftLeft');
@@ -207,7 +207,7 @@ describe('Modifiers', () => {
 				kbSim.keyPress('Meta');
 				expect(spy.mock.calls.length).to.equal(2);
 
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
 				expect(secondLastEv.key).to.equal('Meta');
 				expect(secondLastEv.code).to.equal('MetaLeft');

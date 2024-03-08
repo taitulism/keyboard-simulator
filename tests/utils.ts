@@ -2,8 +2,6 @@ import {MockInstance, expect} from 'vitest';
 import {DispatchCall} from '../src/types';
 
 const assertDispatchCall = (dispatchCall: unknown): dispatchCall is DispatchCall | never => {
-	expect(dispatchCall).to.be.an('array');
-	expect(dispatchCall).not.to.be.empty;
 	expect((dispatchCall as [unknown])[0]).toBeInstanceOf(KeyboardEvent);
 
 	return true;
@@ -17,19 +15,17 @@ export const extractLastEvent = (spy: MockInstance): KeyboardEvent => {
 	return lastCall![0];
 };
 
-export const extractTwoLastEvents = (spy: MockInstance): [KeyboardEvent, KeyboardEvent] => {
-	const lastEvent = extractLastEvent(spy);
+export const extractLastEvents = (spy: MockInstance, count: number): Array<KeyboardEvent> | never => {
 	const {calls} = spy.mock;
 
-	expect(calls.length).toBeGreaterThanOrEqual(2);
+	expect(calls.length).toBeGreaterThanOrEqual(count);
 
-	const secondLastCall = calls[calls.length - 2];
+	const lastCalls = calls.slice(calls.length - count);
 
-	if (assertDispatchCall(secondLastCall)) {
-		const [secondLastEvent] = secondLastCall;
+	return lastCalls.map((call) => {
+		assertDispatchCall(call);
 
-		return [secondLastEvent, lastEvent];
-	}
-
-	throw new Error('Error: extractTwoLastEvents');
+		// A call is an array of a single event = [ev]
+		return call[0];
+	});
 };

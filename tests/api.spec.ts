@@ -1,7 +1,7 @@
 import {JSDOM} from 'jsdom';
 import {MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {KeyboardSimulator} from '../src';
-import {extractLastEvent, extractTwoLastEvents} from './utils';
+import {extractLastEvent, extractLastEvents} from './utils';
 
 describe('API', () => {
 	let doc: Document | undefined;
@@ -44,7 +44,7 @@ describe('API', () => {
 				kbSim.keyDown('Ctrl', 'A');
 				expect(spy.mock.calls.length).to.equal(2);
 
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
 				expect(secondLastEv.key).to.equal('Control');
 				expect(secondLastEv.code).to.equal('ControlLeft');
@@ -95,7 +95,7 @@ describe('API', () => {
 				kbSim.keyUp('Ctrl', 'A');
 				expect(spy.mock.calls.length).to.equal(4);
 
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
 				expect(secondLastEv.key).to.equal('Control');
 				expect(secondLastEv.code).to.equal('ControlLeft');
@@ -133,7 +133,7 @@ describe('API', () => {
 				kbSim.keyPress('A');
 				expect(spy.mock.calls.length).to.equal(2);
 
-				const [secondLastEv, lastEv] = extractTwoLastEvents(spy);
+				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
 				expect(secondLastEv.key).to.equal('a');
 				expect(secondLastEv.code).to.equal('KeyA');
