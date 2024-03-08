@@ -1,6 +1,6 @@
 import {JSDOM} from 'jsdom';
 import {MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
-import {KeyName, KeyboardSimulator} from '../src';
+import {KeyId, KeyName, KeyboardSimulator} from '../src';
 import {extractLastEvent} from './utils';
 
 describe('Alternative Values', () => {
@@ -25,7 +25,8 @@ describe('Alternative Values', () => {
 		spy.mockRestore();
 	});
 
-	describe.todo('When `Numlock` is ON');
+	describe.todo('When `NumLock` is ON');
+	describe.todo('When `CapsLock` is ON');
 
 	describe('When holding `Shift`', () => {
 		it('Letters', () => {
@@ -41,6 +42,7 @@ describe('Alternative Values', () => {
 
 				const ev = extractLastEvent(spy);
 
+				expect(ev.code).to.equal(`Key${letter}`);
 				expect(ev.key).to.equal(letter.toLowerCase());
 				kbSim.keyUp(letter);
 			});
@@ -53,6 +55,7 @@ describe('Alternative Values', () => {
 
 				const ev = extractLastEvent(spy);
 
+				expect(ev.code).to.equal(`Key${letter}`);
 				expect(ev.key).to.equal(letter);
 				kbSim.keyUp(letter);
 			});
@@ -78,6 +81,7 @@ describe('Alternative Values', () => {
 
 				const ev = extractLastEvent(spy);
 
+				expect(ev.code).to.equal(`Num${number}`);
 				expect(ev.key).to.equal(number);
 				kbSim.keyUp(number);
 			});
@@ -90,15 +94,16 @@ describe('Alternative Values', () => {
 
 				const ev = extractLastEvent(spy);
 
+				expect(ev.code).to.equal(`Num${number}`);
 				expect(ev.key).to.equal(symbol);
 				kbSim.keyUp(number);
 			});
 		});
 
 		it('Other Characters', () => {
-			const chars = new Map<KeyName, [string, string]>([
+			const chars = new Map<KeyId, [string, string]>([
 				['Slash', ['/', '?']],
-				['BackSlash', ['\\', '|']],
+				['Backslash', ['\\', '|']],
 				['Period', ['.', '>']],
 				['Comma', [',', '<']],
 				['Quote', ['\'', '"']],
@@ -111,26 +116,28 @@ describe('Alternative Values', () => {
 			]);
 
 			// Without `Shift`
-			chars.forEach(([value], keyName) => {
-				kbSim.keyDown(keyName);
+			chars.forEach(([value], keyId) => {
+				kbSim.keyDown(keyId);
 
 				const ev = extractLastEvent(spy);
 
+				expect(ev.code).to.equal(keyId);
 				expect(ev.key).to.equal(value);
-				kbSim.keyUp(keyName);
+				kbSim.keyUp(keyId);
 			});
 
 			// With `Shift`
 			kbSim.keyDown('Shift');
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			chars.forEach(([value, alternativeValue], keyName) => {
-				kbSim.keyDown(keyName);
+			chars.forEach(([value, alternativeValue], keyId) => {
+				kbSim.keyDown(keyId);
 
 				const ev = extractLastEvent(spy);
 
+				expect(ev.code).to.equal(keyId);
 				expect(ev.key).to.equal(alternativeValue);
-				kbSim.keyUp(keyName);
+				kbSim.keyUp(keyId);
 			});
 		});
 	});

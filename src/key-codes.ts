@@ -231,18 +231,18 @@ export const KeyAliases = {
 	'9': 'Num9',
 	'0': 'Num0',
 
-	Slash: 'Slash',
 	BackSlash: 'Backslash',
-	Period: 'Period',
-	Comma: 'Comma',
 	SingleQuote: 'Quote',
 	BackQuote: 'Backquote',
 	BackTick: 'Backquote',
 	SemiColon: 'Semicolon',
-	BracketLeft: 'BracketLeft',
-	BracketRight: 'BracketRight',
-	Minus: 'Minus',
-	Plus: 'Equal',
+
+	Up: 'ArrowUp',
+	Right: 'ArrowRight',
+	Down: 'ArrowDown',
+	Left: 'ArrowLeft',
+	PgUp: 'PageUp',
+	PgDn: 'PageDown',
 
 	// Modifiers
 	Ctrl: 'ControlLeft',
