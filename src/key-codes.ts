@@ -25,8 +25,7 @@ export const getKeyId = (keyName: KeyName): KeyId => {
 	if (isKeyId(keyName)) return keyName;
 	if (isAlias(keyName)) return KeyAliases[keyName];
 
-	// TODO:ts
-	throw new Error(`Unknown key name: ${(keyName as string).toString()}`);
+	throw new Error(`Unknown key name: ${keyName}`);
 };
 
 export const Modifiers = {

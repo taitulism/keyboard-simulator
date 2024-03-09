@@ -12,13 +12,13 @@ describe('API', () => {
 		const dom = new JSDOM('', {url: 'http://localhost'});
 
 		doc = dom.window.document;
-		spy = vi.spyOn(doc, 'dispatchEvent');
+		spy = vi.spyOn(doc, 'dispatchEvent').mockReturnValue(false);
 		kbSim = new KeyboardSimulator(doc);
 	});
 
 	beforeEach(() => {
 		kbSim.reset();
-		spy.mockReset();
+		spy.mockClear();
 	});
 
 	afterAll(() => {
@@ -53,6 +53,21 @@ describe('API', () => {
 				expect(lastEv.key).to.equal('a');
 				expect(lastEv.code).to.equal('KeyA');
 				expect(lastEv.type).to.equal('keydown');
+			});
+
+			it('For a single key: returns a "cancelable" boolean', () => {
+				const single = kbSim.keyDown('A');
+
+				expect(single).to.be.a('Boolean');
+			});
+
+			it('For multiple keys: returns an array of "cancelable" booleans', () => {
+				const multi = kbSim.keyDown('A', 'B');
+
+				expect(multi).to.be.an('Array');
+				expect(multi).to.have.lengthOf(2);
+				expect(multi[0]).to.be.a('Boolean');
+				expect(multi[1]).to.be.a('Boolean');
 			});
 
 			it('Throws on unsupported key', () => {
@@ -106,6 +121,25 @@ describe('API', () => {
 				expect(lastEv.type).to.equal('keyup');
 			});
 
+			it('For a single key: returns a "cancelable" boolean', () => {
+				kbSim.keyDown('A');
+
+				const single = kbSim.keyUp('A');
+
+				expect(single).to.be.a('Boolean');
+			});
+
+			it('For multiple keys: returns an array of "cancelable" booleans', () => {
+				kbSim.keyDown('A', 'B');
+
+				const multi = kbSim.keyUp('A', 'B');
+
+				expect(multi).to.be.an('Array');
+				expect(multi).to.have.lengthOf(2);
+				expect(multi[0]).to.be.a('Boolean');
+				expect(multi[1]).to.be.a('Boolean');
+			});
+
 			it('Throws on unsupported key', () => {
 				const nonExistKey = () => {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -148,43 +182,72 @@ describe('API', () => {
 			it('Handles multiple keys', () => {
 				kbSim.keyPress('A', 'B');
 
-				const {calls} = spy.mock;
+				const [ev1, ev2, ev3, ev4] = extractLastEvents(spy, 4);
 
-				expect(calls.length).to.equal(4);
+				expect(ev1.key).to.equal('a');
+				expect(ev1.code).to.equal('KeyA');
+				expect(ev1.type).to.equal('keydown');
 
-				const [[ev1], [ev2], [ev3], [ev4]] = calls;
+				expect(ev2.key).to.equal('a');
+				expect(ev2.code).to.equal('KeyA');
+				expect(ev2.type).to.equal('keyup');
 
-				// TODO:ts
-				expect((ev1 as KeyboardEvent).key).to.equal('a');
-				expect((ev1 as KeyboardEvent).code).to.equal('KeyA');
-				expect((ev1 as KeyboardEvent).type).to.equal('keydown');
+				expect(ev3.key).to.equal('b');
+				expect(ev3.code).to.equal('KeyB');
+				expect(ev3.type).to.equal('keydown');
 
-				expect((ev2 as KeyboardEvent).key).to.equal('a');
-				expect((ev2 as KeyboardEvent).code).to.equal('KeyA');
-				expect((ev2 as KeyboardEvent).type).to.equal('keyup');
+				expect(ev4.key).to.equal('b');
+				expect(ev4.code).to.equal('KeyB');
+				expect(ev4.type).to.equal('keyup');
+			});
 
-				expect((ev3 as KeyboardEvent).key).to.equal('b');
-				expect((ev3 as KeyboardEvent).code).to.equal('KeyB');
-				expect((ev3 as KeyboardEvent).type).to.equal('keydown');
+			it('For a single key: returns an array of "cancelable" booleans', () => {
+				const single = kbSim.keyPress('A');
 
-				expect((ev4 as KeyboardEvent).key).to.equal('b');
-				expect((ev4 as KeyboardEvent).code).to.equal('KeyB');
-				expect((ev4 as KeyboardEvent).type).to.equal('keyup');
+				expect(single).to.be.an('Array');
+				expect(single).to.have.lengthOf(2);
+				expect(single[0]).to.be.a('Boolean');
+				expect(single[1]).to.be.a('Boolean');
+			});
+
+			it('For multiple keys: returns an array of array of "cancelable" booleans', () => {
+				const multi = kbSim.keyPress('A', 'B');
+
+				expect(multi).to.be.an('Array');
+				expect(multi).to.have.lengthOf(2);
+				expect(multi[0]).to.be.an('Array');
+				expect(multi[0]).to.have.lengthOf(2);
+				expect(multi[0][0]).to.be.a('Boolean');
+				expect(multi[0][1]).to.be.a('Boolean');
+				expect(multi[1]).to.be.an('Array');
+				expect(multi[1]).to.have.lengthOf(2);
+				expect(multi[1][0]).to.be.a('Boolean');
+				expect(multi[1][1]).to.be.a('Boolean');
 			});
 		});
 
 		describe('.holdKey()', () => {
-			it('Dispatches "keydown" event with `repeat: true`', () => {
+			it('Dispatches multiple "keydown" events with `repeat: true`', () => {
 				expect(spy.mock.calls.length).to.equal(0);
-				kbSim.holdKey('A', 3);
+				kbSim.holdKey('Ctrl', 3);
 				expect(spy.mock.calls.length).to.equal(3);
 
 				const ev = extractLastEvent(spy);
 
-				expect(ev.key).to.equal('a');
-				expect(ev.code).to.equal('KeyA');
+				expect(ev.key).to.equal('Control');
+				expect(ev.code).to.equal('ControlLeft');
 				expect(ev.type).to.equal('keydown');
 				expect(ev.repeat).to.equal(true);
+			});
+
+			it('Returns an array of "cancelable" booleans', () => {
+				const events = kbSim.holdKey('A', 3);
+
+				expect(events).to.be.an('Array');
+				expect(events).to.have.lengthOf(3);
+				expect(events[0]).to.be.a('Boolean');
+				expect(events[1]).to.be.a('Boolean');
+				expect(events[2]).to.be.a('Boolean');
 			});
 
 			it('Throws when key is already down', () => {

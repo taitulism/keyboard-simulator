@@ -48,9 +48,10 @@ export class KeyboardSimulator {
 		else if (modifier === 'Meta') this.isMetaDown = isPressed;
 	}
 
-	// TODO:test multiple keys & return
+	public keyDown (key: KeyName): boolean;
+	public keyDown (...keys: Array<KeyName>): Array<boolean>;
 	public keyDown (...keys: Array<KeyName>) {
-		return keys.map((keyName) => {
+		const dispatchResults = keys.map((keyName) => {
 			const keyId = getKeyId(keyName);
 
 			this.followKey(keyId);
@@ -60,11 +61,14 @@ export class KeyboardSimulator {
 
 			return this.ctxElm.dispatchEvent(keyDownEvent);
 		});
+
+		return (dispatchResults.length === 1) ? dispatchResults[0] : dispatchResults;
 	}
 
-	// TODO:test multiple keys & return
+	public keyUp (key: KeyName): boolean;
+	public keyUp (...keys: Array<KeyName>): Array<boolean>;
 	public keyUp (...keys: Array<KeyName>) {
-		return keys.map((keyName) => {
+		const dispatchResults = keys.map((keyName) => {
 			const keyId = getKeyId(keyName);
 
 			this.unfollowKey(keyId);
@@ -74,14 +78,19 @@ export class KeyboardSimulator {
 
 			return this.ctxElm.dispatchEvent(keyUpEvent);
 		});
+
+		return (dispatchResults.length === 1) ? dispatchResults[0] : dispatchResults;
 	}
 
-	// TODO:test multi & return
+	public keyPress (key: KeyName): Array<boolean>;
+	public keyPress (...keys: Array<KeyName>): Array<Array<boolean>>;
 	public keyPress (...keys: Array<KeyName>) {
-		return keys.map((key) => [
+		const dispatchResults = keys.map((key) => [
 			this.keyDown(key),
 			this.keyUp(key),
 		]);
+
+		return (dispatchResults.length === 1) ? dispatchResults[0] : dispatchResults;
 	}
 
 	private createKeyboardEvent (
@@ -102,18 +111,17 @@ export class KeyboardSimulator {
 		});
 	}
 
-	// TODO:test more
 	public holdKey (keyName: KeyName, repeatCount: number) {
 		const keyId = getKeyId(keyName);
 
 		this.followKey(keyId);
-
 		if (isModifier(keyId)) this.toggleModifier(keyId, true);
 
-		const keyDownEvent = this.createKeyboardEvent('keydown', keyId, true);
 		const dispatches = [];
 
 		for (let i = 0; i < repeatCount; i++) {
+			const keyDownEvent = this.createKeyboardEvent('keydown', keyId, true);
+
 			dispatches.push(this.ctxElm.dispatchEvent(keyDownEvent));
 		}
 
@@ -124,7 +132,7 @@ export class KeyboardSimulator {
 		const dispatches: Array<boolean> = [];
 
 		Array.from(this.heldKeys).reverse().forEach((key) => {
-			dispatches.push(...this.keyUp(key));
+			dispatches.push(this.keyUp(key));
 		});
 
 		this.heldKeys.clear();
