@@ -25,6 +25,7 @@ const esm = {
 		banner,
 		dir: './dist/esm',
 		format: 'es',
+		sourcemap: true,
 		entryFileNames:'keyboard-simulator.esm.js',
 	},
 };
