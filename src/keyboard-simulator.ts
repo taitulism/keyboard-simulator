@@ -18,6 +18,8 @@ export class KeyboardSimulator {
 	private isMetaDown = false;
 	private heldKeys = new Set<KeyName>();
 
+	constructor (public ctxElm: ContextElement = document) {}
+
 	private followKey (key: KeyId) {
 		if (this.heldKeys.has(key)) throw new Error(`The key "${key}" is already pressed down.`);
 		this.heldKeys.add(key);
@@ -27,9 +29,6 @@ export class KeyboardSimulator {
 		if (!this.heldKeys.has(key)) throw new Error(`The key "${key}" is not pressed down.`);
 		this.heldKeys.delete(key);
 	}
-
-	// TODO:! not sure about one ctx per instance. Same keyboard can be used in multi ctx
-	constructor (public ctxElm: ContextElement = document) {}
 
 	public reset () {
 		this.isCtrlDown = false;
@@ -96,7 +95,7 @@ export class KeyboardSimulator {
 	private createKeyboardEvent (
 		eventType: EventType,
 		keyName: KeyName,
-		repeat: boolean = false, // TODO: I don't like this. What about additional future props?
+		repeat: boolean = false,
 	) {
 		const keyId = getKeyId(keyName);
 
@@ -126,6 +125,12 @@ export class KeyboardSimulator {
 		}
 
 		return dispatches;
+	}
+
+	public setContextElm (ctxElm: ContextElement) {
+		this.ctxElm = ctxElm;
+
+		return this;
 	}
 
 	public releaseAll () {

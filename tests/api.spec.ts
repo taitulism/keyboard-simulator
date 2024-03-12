@@ -1,5 +1,5 @@
-import {JSDOM} from 'jsdom';
-import {MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
+import {JSDOM, DOMWindow} from 'jsdom';
+import {MockInstance, afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {KeyboardSimulator} from '../src';
 import {extractLastEvent, extractLastEvents} from './utils';
 
@@ -12,7 +12,7 @@ describe('API', () => {
 		const dom = new JSDOM('', {url: 'http://localhost'});
 
 		doc = dom.window.document;
-		spy = vi.spyOn(doc, 'dispatchEvent').mockReturnValue(false);
+		spy = vi.spyOn(doc, 'dispatchEvent');
 		kbSim = new KeyboardSimulator(doc);
 	});
 
@@ -359,6 +359,52 @@ describe('API', () => {
 			kbSim.reset();
 			kbSim.releaseAll();
 			expect(spy.mock.calls.length).to.equal(3);
+		});
+	});
+
+	describe('.setContextElm()', () => {
+		let win: DOMWindow | undefined;
+		let doc: Document | undefined;
+		let input: HTMLInputElement;
+		let kbSim: KeyboardSimulator;
+		let docDispatchSpy: MockInstance<[event: Event], boolean>;
+		let inputDispatchSpy: MockInstance<[event: Event], boolean>;
+
+		beforeAll(() => {
+			const dom = new JSDOM('<input id="input" type="text" />', {url: 'http://localhost'});
+
+			win = dom.window;
+			doc = dom.window.document;
+			input = doc!.getElementById('input') as HTMLInputElement;
+			kbSim = new KeyboardSimulator(doc);
+		});
+
+		beforeEach(() => {
+			docDispatchSpy = vi.spyOn(doc!, 'dispatchEvent');
+			inputDispatchSpy = vi.spyOn(input, 'dispatchEvent');
+		});
+
+		afterEach(() => {
+			docDispatchSpy.mockRestore();
+			inputDispatchSpy.mockRestore();
+		});
+
+		it('Changes the element that gets the keyboard events', () => {
+			kbSim.keyPress('A');
+			kbSim.setContextElm(input);
+			kbSim.keyPress('B');
+
+			const evBefore = extractLastEvent(docDispatchSpy);
+			const evAfter = extractLastEvent(inputDispatchSpy);
+
+			expect(evBefore.target).to.equal(doc);
+			expect(evAfter.target).to.be.instanceOf(win!.HTMLInputElement);
+		});
+
+		it('Returns the instance', () => {
+			const instance = kbSim.setContextElm(input);
+
+			expect(instance).to.equal(kbSim);
 		});
 	});
 });
