@@ -1,9 +1,8 @@
 {
 	"name": "keyboard-simulator",
-	"description": "Doing stuff.",
+	"description": "Simulate key presess.",
 	"version": "0.0.0",
 	"license": "MIT",
-	"private": true,
 	"main": "./src/index.ts",
 	"module": "./dist/esm/keyboard-simulator.esm.js",
 	"browser": "./dist/browser/keyboard-simulator.min.js",
@@ -46,7 +45,6 @@
       "typescript": "5.3.3",
       "vitest": "1.3.1"
 	},
-	"keywords": [],
 	"homepage": "https://github.com/taitulism/keyboard-simulator#readme",
 	"repository": {
 		"type": "git",
@@ -56,5 +54,13 @@
 		"name": "Itai Tenenbaum",
 		"email": "taitu.dev@gmail.com",
 		"url": "https://github.com/taitulism"
-	}
+	},
+	"keywords": [
+		"keyboard",
+		"event",
+		"simulator",
+		"simulate",
+		"dispatch",
+		"KeyboardEvent"
+	]
 }
