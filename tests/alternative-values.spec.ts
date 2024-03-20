@@ -81,7 +81,7 @@ describe('Alternative Values', () => {
 
 				const ev = extractLastEvent(spy);
 
-				expect(ev.code).to.equal(`Num${number}`);
+				expect(ev.code).to.equal(`Digit${number}`);
 				expect(ev.key).to.equal(number);
 				kbSim.keyUp(number);
 			});
@@ -94,7 +94,7 @@ describe('Alternative Values', () => {
 
 				const ev = extractLastEvent(spy);
 
-				expect(ev.code).to.equal(`Num${number}`);
+				expect(ev.code).to.equal(`Digit${number}`);
 				expect(ev.key).to.equal(symbol);
 				kbSim.keyUp(number);
 			});
