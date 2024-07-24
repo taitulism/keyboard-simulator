@@ -5,7 +5,7 @@ import {extractLastEvent, extractLastEvents} from './utils';
 
 describe('Modifiers', () => {
 	let doc: Document | undefined;
-	let spy: MockInstance<[event: Event], boolean>;
+	let spy: MockInstance;
 	let kbSim: KeyboardSimulator;
 
 	beforeAll(() => {

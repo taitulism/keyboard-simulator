@@ -5,7 +5,7 @@ import {extractLastEvent, extractLastEvents} from './utils';
 
 describe('API', () => {
 	let doc: Document | undefined;
-	let spy: MockInstance<[event: Event], boolean>;
+	let spy: MockInstance;
 	let kbSim: KeyboardSimulator;
 
 	beforeAll(() => {
@@ -367,8 +367,8 @@ describe('API', () => {
 		let doc: Document | undefined;
 		let input: HTMLInputElement;
 		let kbSim: KeyboardSimulator;
-		let docDispatchSpy: MockInstance<[event: Event], boolean>;
-		let inputDispatchSpy: MockInstance<[event: Event], boolean>;
+		let docDispatchSpy: MockInstance;
+		let inputDispatchSpy: MockInstance;
 
 		beforeAll(() => {
 			const dom = new JSDOM('<input id="input" type="text" />', {url: 'http://localhost'});
