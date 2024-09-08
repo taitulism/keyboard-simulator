@@ -25,7 +25,55 @@ describe('Alternative Values', () => {
 		spy.mockRestore();
 	});
 
-	describe.todo('When `NumLock` is ON');
+	describe('When `NumLock` is ON', () => {
+		it('Numpad Numbers', () => {
+			const numpadKeys = new Map<KeyName, string>([
+				['Numpad0', 'Insert'],
+				['Numpad1', 'End'],
+				['Numpad2', 'ArrowDown'],
+				['Numpad3', 'PageDown'],
+				['Numpad4', 'ArrowLeft'],
+				['Numpad5', 'Clear'],
+				['Numpad6', 'ArrowRight'],
+				['Numpad7', 'Home'],
+				['Numpad8', 'ArrowUp'],
+				['Numpad9', 'PageUp'],
+				['NumpadDecimal', 'Delete'],
+			]);
+
+			// `NumLock` OFF
+			numpadKeys.forEach((nonNumber, keyId) => {
+				kbSim.keyDown(keyId);
+
+				const ev = extractLastEvent(spy);
+
+				expect(ev.code).to.equal(keyId);
+				expect(ev.key).to.equal(nonNumber);
+				kbSim.keyUp(keyId);
+			});
+
+			// `NumLock` ON
+			kbSim.keyPress('NumLock');
+
+			numpadKeys.forEach((value, keyId) => {
+				kbSim.keyDown(keyId);
+
+				const ev = extractLastEvent(spy);
+
+				expect(ev.code).to.equal(keyId);
+
+				if (keyId === 'NumpadDecimal') {
+					expect(ev.key).to.equal('.');
+				}
+				else { // NumpadX --> X
+					expect(ev.key).to.equal(keyId[keyId.length - 1]);
+				}
+
+				kbSim.keyUp(keyId);
+			});
+		});
+	});
+
 	describe.todo('When `CapsLock` is ON');
 
 	describe('When holding `Shift`', () => {
@@ -59,6 +107,8 @@ describe('Alternative Values', () => {
 				expect(ev.key).to.equal(letter);
 				kbSim.keyUp(letter);
 			});
+
+			kbSim.keyUp('Shift');
 		});
 
 		it('Numbers', () => {

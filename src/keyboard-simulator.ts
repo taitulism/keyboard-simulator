@@ -6,6 +6,9 @@ import {
 	Modifiers,
 	getKeyId,
 	getKeyValue,
+	isTogglerBtn,
+	TogglerButton,
+	TogglerButtons,
 } from './key-codes';
 
 export type ContextElement = HTMLElement | Document
@@ -16,6 +19,7 @@ export class KeyboardSimulator {
 	private isAltDown = false;
 	private isShiftDown = false;
 	private isMetaDown = false;
+	private isNumLockOn = false;
 	private heldKeys = new Set<KeyName>();
 
 	constructor (public ctxElm: ContextElement = document) {}
@@ -35,6 +39,7 @@ export class KeyboardSimulator {
 		this.isAltDown = false;
 		this.isShiftDown = false;
 		this.isMetaDown = false;
+		this.isNumLockOn = false;
 		this.heldKeys.clear();
 	}
 
@@ -47,6 +52,13 @@ export class KeyboardSimulator {
 		else if (modifier === 'Meta') this.isMetaDown = isPressed;
 	}
 
+	private toggleToggler (key: TogglerButton) {
+		const togglerBtn = TogglerButtons[key];
+
+		if (togglerBtn === 'NumLock') this.isNumLockOn = !this.isNumLockOn;
+		// else if (togglerBtn === 'CapsLock') this.isCapsLockOn = !this.isCapsLockOn;
+	}
+
 	public keyDown (key: KeyName): boolean;
 	public keyDown (...keys: Array<KeyName>): Array<boolean>;
 	public keyDown (...keys: Array<KeyName>) {
@@ -55,6 +67,7 @@ export class KeyboardSimulator {
 
 			this.followKey(keyId);
 			if (isModifier(keyId)) this.toggleModifier(keyId, true);
+			else if (isTogglerBtn(keyId)) this.toggleToggler(keyId);
 
 			const keyDownEvent = this.createKeyboardEvent('keydown', keyId);
 
@@ -98,10 +111,11 @@ export class KeyboardSimulator {
 		repeat: boolean = false,
 	) {
 		const keyId = getKeyId(keyName);
+		const keyValue = getKeyValue(keyId, this.isShiftDown || this.isNumLockOn);
 
 		return new KeyboardEvent(eventType, {
 			code: keyId,
-			key: getKeyValue(keyId, this.isShiftDown),
+			key: keyValue,
 			ctrlKey: this.isCtrlDown,
 			altKey: this.isAltDown,
 			shiftKey: this.isShiftDown,

@@ -1,4 +1,5 @@
 export type Modifier = keyof typeof Modifiers
+export type TogglerButton = keyof typeof TogglerButtons
 export type KeyId = keyof typeof KeyMap
 export type KeyAlias = keyof typeof KeyAliases
 export type KeyName = KeyId | KeyAlias
@@ -6,13 +7,14 @@ export type KeyName = KeyId | KeyAlias
 export const isKeyId = (key: KeyName): key is KeyId => key in KeyMap;
 export const isAlias = (key: KeyName): key is KeyAlias => key in KeyAliases;
 export const isModifier = (str: string): str is Modifier => str in Modifiers;
+export const isTogglerBtn = (str: string): str is TogglerButton => str in TogglerButtons;
 
-export const getKeyValue = (keyId: KeyId, withShift: boolean) => {
+export const getKeyValue = (keyId: KeyId, alternativeValue: boolean) => {
 	// value = single or array
 	const value = KeyMap[keyId];
 
 	if (Array.isArray(value)) {
-		return withShift
+		return alternativeValue
 			? value[1]
 			: value[0]
 		;
@@ -37,6 +39,12 @@ export const Modifiers = {
 	ShiftRight: 'Shift',
 	MetaLeft: 'Meta',
 	MetaRight: 'Meta',
+} as const;
+
+export const TogglerButtons = {
+	NumLock: 'NumLock',
+	// CapsLock: 'CapsLock',
+	// ScrollLock: 'ScrollLock',
 } as const;
 
 export const KeyMap = {
@@ -112,34 +120,22 @@ export const KeyMap = {
 	Home: 'Home',
 	End: 'End',
 
-	// NumPad (Numlock ON)
-	Numpad1: '1',
-	Numpad2: '2',
-	Numpad3: '3',
-	Numpad4: '4',
-	Numpad5: '5',
-	Numpad6: '6',
-	Numpad7: '7',
-	Numpad8: '8',
-	Numpad9: '9',
-	Numpad0: '0',
-	NumpadDecimal: '.',
+	// NumPad (Numlock)
+	Numpad0: ['Insert', '0'],
+	Numpad1: ['End', '1'],
+	Numpad2: ['ArrowDown', '2'],
+	Numpad3: ['PageDown', '3'],
+	Numpad4: ['ArrowLeft', '4'],
+	Numpad5: ['Clear', '5'],
+	Numpad6: ['ArrowRight', '6'],
+	Numpad7: ['Home', '7'],
+	Numpad8: ['ArrowUp', '8'],
+	Numpad9: ['PageUp', '9'],
+	NumpadDecimal: ['Delete', '.'],
 	NumpadDivide: '/',
 	NumpadSubtract: '-',
 	NumpadMultiply: '*',
 	NumpadAdd: '+',
-	// NumPad (Numlock OFF)
-	// Numpad1: 'End',
-	// Numpad2: 'ArrowDown',
-	// Numpad3: 'PageDown',
-	// Numpad4: 'ArrowLeft',
-	// Numpad5: 'Clear',
-	// Numpad6: 'ArrowRight',
-	// Numpad7: 'Home',
-	// Numpad8: 'ArrowUp',
-	// Numpad9: 'PageUp',
-	// Numpad0: 'Insert',
-	// NumpadDecimal: 'Delete',
 
 	// Modifiers
 	ControlLeft: 'Control',
