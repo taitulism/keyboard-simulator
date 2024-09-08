@@ -21,6 +21,7 @@ export class KeyboardSimulator {
 	private isMetaDown = false;
 	private isCapsLockOn = false;
 	private isNumLockOn = false;
+	private isScrollLockOn = false;
 	private heldKeys = new Set<KeyName>();
 
 	constructor (public ctxElm: ContextElement = document) {}
@@ -42,6 +43,7 @@ export class KeyboardSimulator {
 		this.isMetaDown = false;
 		this.isCapsLockOn = false;
 		this.isNumLockOn = false;
+		this.isScrollLockOn = false;
 		this.heldKeys.clear();
 	}
 
@@ -59,6 +61,7 @@ export class KeyboardSimulator {
 
 		if (togglerBtn === 'NumLock') this.isNumLockOn = !this.isNumLockOn;
 		else if (togglerBtn === 'CapsLock') this.isCapsLockOn = !this.isCapsLockOn;
+		else if (togglerBtn === 'ScrollLock') this.isScrollLockOn = !this.isScrollLockOn;
 	}
 
 	public keyDown (key: KeyName): boolean;

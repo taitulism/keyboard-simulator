@@ -44,7 +44,7 @@ export const Modifiers = {
 export const TogglerButtons = {
 	NumLock: 'NumLock',
 	CapsLock: 'CapsLock',
-	// ScrollLock: 'ScrollLock',
+	ScrollLock: 'ScrollLock',
 } as const;
 
 export const KeyMap = {
