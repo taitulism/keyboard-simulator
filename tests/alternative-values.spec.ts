@@ -74,7 +74,39 @@ describe('Alternative Values', () => {
 		});
 	});
 
-	describe.todo('When `CapsLock` is ON');
+	describe('When `CapsLock` is ON', () => {
+		it('Letters', () => {
+			const letters = [
+				'A', 'B', 'C', 'D', 'E', 'F', 'G',
+				'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+				'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+			] as const;
+
+			// `CapsLock` OFF
+			letters.forEach((letter) => {
+				kbSim.keyDown(letter);
+
+				const ev = extractLastEvent(spy);
+
+				expect(ev.code).to.equal(`Key${letter}`);
+				expect(ev.key).to.equal(letter.toLowerCase());
+				kbSim.keyUp(letter);
+			});
+
+			// `CapsLock` ON
+			kbSim.keyPress('CapsLock');
+
+			letters.forEach((letter) => {
+				kbSim.keyDown(letter);
+
+				const ev = extractLastEvent(spy);
+
+				expect(ev.code).to.equal(`Key${letter}`);
+				expect(ev.key).to.equal(letter.toUpperCase());
+				kbSim.keyUp(letter);
+			});
+		});
+	});
 
 	describe('When holding `Shift`', () => {
 		it('Letters', () => {
@@ -104,7 +136,7 @@ describe('Alternative Values', () => {
 				const ev = extractLastEvent(spy);
 
 				expect(ev.code).to.equal(`Key${letter}`);
-				expect(ev.key).to.equal(letter);
+				expect(ev.key).to.equal(letter.toUpperCase());
 				kbSim.keyUp(letter);
 			});
 

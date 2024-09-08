@@ -9,12 +9,12 @@ export const isAlias = (key: KeyName): key is KeyAlias => key in KeyAliases;
 export const isModifier = (str: string): str is Modifier => str in Modifiers;
 export const isTogglerBtn = (str: string): str is TogglerButton => str in TogglerButtons;
 
-export const getKeyValue = (keyId: KeyId, alternativeValue: boolean) => {
+export const getKeyValue = (keyId: KeyId, isAlterValue: boolean) => {
 	// value = single or array
 	const value = KeyMap[keyId];
 
 	if (Array.isArray(value)) {
-		return alternativeValue
+		return isAlterValue
 			? value[1]
 			: value[0]
 		;
@@ -43,7 +43,7 @@ export const Modifiers = {
 
 export const TogglerButtons = {
 	NumLock: 'NumLock',
-	// CapsLock: 'CapsLock',
+	CapsLock: 'CapsLock',
 	// ScrollLock: 'ScrollLock',
 } as const;
 

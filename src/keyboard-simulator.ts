@@ -19,6 +19,7 @@ export class KeyboardSimulator {
 	private isAltDown = false;
 	private isShiftDown = false;
 	private isMetaDown = false;
+	private isCapsLockOn = false;
 	private isNumLockOn = false;
 	private heldKeys = new Set<KeyName>();
 
@@ -39,6 +40,7 @@ export class KeyboardSimulator {
 		this.isAltDown = false;
 		this.isShiftDown = false;
 		this.isMetaDown = false;
+		this.isCapsLockOn = false;
 		this.isNumLockOn = false;
 		this.heldKeys.clear();
 	}
@@ -56,7 +58,7 @@ export class KeyboardSimulator {
 		const togglerBtn = TogglerButtons[key];
 
 		if (togglerBtn === 'NumLock') this.isNumLockOn = !this.isNumLockOn;
-		// else if (togglerBtn === 'CapsLock') this.isCapsLockOn = !this.isCapsLockOn;
+		else if (togglerBtn === 'CapsLock') this.isCapsLockOn = !this.isCapsLockOn;
 	}
 
 	public keyDown (key: KeyName): boolean;
@@ -110,8 +112,9 @@ export class KeyboardSimulator {
 		keyName: KeyName,
 		repeat: boolean = false,
 	) {
+		const isAlternativeValue = this.isShiftDown || this.isCapsLockOn || this.isNumLockOn;
 		const keyId = getKeyId(keyName);
-		const keyValue = getKeyValue(keyId, this.isShiftDown || this.isNumLockOn);
+		const keyValue = getKeyValue(keyId, isAlternativeValue);
 
 		return new KeyboardEvent(eventType, {
 			code: keyId,
