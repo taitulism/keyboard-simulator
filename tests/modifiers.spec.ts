@@ -36,10 +36,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Control');
 				expect(ev.code).to.equal('ControlLeft');
-				expect(ev.ctrlKey).to.true;
-				expect(ev.altKey).to.false;
-				expect(ev.shiftKey).to.false;
-				expect(ev.metaKey).to.false;
+				expect(ev.ctrlKey).toBe(true);
+				expect(ev.altKey).toBe(false);
+				expect(ev.shiftKey).toBe(false);
+				expect(ev.metaKey).toBe(false);
 			});
 
 			it('.keyUp(Ctrl)', () => {
@@ -52,10 +52,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Control');
 				expect(ev.code).to.equal('ControlLeft');
-				expect(ev.ctrlKey).to.false;
-				expect(ev.altKey).to.false;
-				expect(ev.shiftKey).to.false;
-				expect(ev.metaKey).to.false;
+				expect(ev.ctrlKey).toBe(false);
+				expect(ev.altKey).toBe(false);
+				expect(ev.shiftKey).toBe(false);
+				expect(ev.metaKey).toBe(false);
 			});
 
 			it('.keyPress(Ctrl)', () => {
@@ -69,8 +69,8 @@ describe('Modifiers', () => {
 				expect(secondLastEv.code).to.equal('ControlLeft');
 				expect(lastEv.key).to.equal('Control');
 				expect(lastEv.code).to.equal('ControlLeft');
-				expect(secondLastEv.ctrlKey).to.true;
-				expect(lastEv.ctrlKey).to.false;
+				expect(secondLastEv.ctrlKey).toBe(true);
+				expect(lastEv.ctrlKey).toBe(false);
 			});
 		});
 
@@ -84,10 +84,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Alt');
 				expect(ev.code).to.equal('AltLeft');
-				expect(ev.ctrlKey).to.false;
-				expect(ev.altKey).to.true;
-				expect(ev.shiftKey).to.false;
-				expect(ev.metaKey).to.false;
+				expect(ev.ctrlKey).toBe(false);
+				expect(ev.altKey).toBe(true);
+				expect(ev.shiftKey).toBe(false);
+				expect(ev.metaKey).toBe(false);
 			});
 
 			it('.keyUp(Alt)', () => {
@@ -100,10 +100,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Alt');
 				expect(ev.code).to.equal('AltLeft');
-				expect(ev.ctrlKey).to.false;
-				expect(ev.altKey).to.false;
-				expect(ev.shiftKey).to.false;
-				expect(ev.metaKey).to.false;
+				expect(ev.ctrlKey).toBe(false);
+				expect(ev.altKey).toBe(false);
+				expect(ev.shiftKey).toBe(false);
+				expect(ev.metaKey).toBe(false);
 			});
 
 			it('.keyPress(Alt)', () => {
@@ -117,8 +117,8 @@ describe('Modifiers', () => {
 				expect(secondLastEv.code).to.equal('AltLeft');
 				expect(lastEv.key).to.equal('Alt');
 				expect(lastEv.code).to.equal('AltLeft');
-				expect(secondLastEv.altKey).to.true;
-				expect(lastEv.altKey).to.false;
+				expect(secondLastEv.altKey).toBe(true);
+				expect(lastEv.altKey).toBe(false);
 			});
 		});
 
@@ -132,10 +132,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Shift');
 				expect(ev.code).to.equal('ShiftLeft');
-				expect(ev.ctrlKey).to.false;
-				expect(ev.altKey).to.false;
-				expect(ev.shiftKey).to.true;
-				expect(ev.metaKey).to.false;
+				expect(ev.ctrlKey).toBe(false);
+				expect(ev.altKey).toBe(false);
+				expect(ev.shiftKey).toBe(true);
+				expect(ev.metaKey).toBe(false);
 			});
 
 			it('.keyUp(Shift)', () => {
@@ -148,10 +148,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Shift');
 				expect(ev.code).to.equal('ShiftLeft');
-				expect(ev.ctrlKey).to.false;
-				expect(ev.altKey).to.false;
-				expect(ev.shiftKey).to.false;
-				expect(ev.metaKey).to.false;
+				expect(ev.ctrlKey).toBe(false);
+				expect(ev.altKey).toBe(false);
+				expect(ev.shiftKey).toBe(false);
+				expect(ev.metaKey).toBe(false);
 			});
 
 			it('.keyPress(Shift)', () => {
@@ -165,8 +165,8 @@ describe('Modifiers', () => {
 				expect(secondLastEv.code).to.equal('ShiftLeft');
 				expect(lastEv.key).to.equal('Shift');
 				expect(lastEv.code).to.equal('ShiftLeft');
-				expect(secondLastEv.shiftKey).to.true;
-				expect(lastEv.shiftKey).to.false;
+				expect(secondLastEv.shiftKey).toBe(true);
+				expect(lastEv.shiftKey).toBe(false);
 			});
 		});
 
@@ -180,10 +180,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Meta');
 				expect(ev.code).to.equal('MetaLeft');
-				expect(ev.ctrlKey).to.false;
-				expect(ev.altKey).to.false;
-				expect(ev.shiftKey).to.false;
-				expect(ev.metaKey).to.true;
+				expect(ev.ctrlKey).toBe(false);
+				expect(ev.altKey).toBe(false);
+				expect(ev.shiftKey).toBe(false);
+				expect(ev.metaKey).toBe(true);
 			});
 
 			it('.keyUp(Meta)', () => {
@@ -196,10 +196,10 @@ describe('Modifiers', () => {
 
 				expect(ev.key).to.equal('Meta');
 				expect(ev.code).to.equal('MetaLeft');
-				expect(ev.ctrlKey).to.false;
-				expect(ev.altKey).to.false;
-				expect(ev.shiftKey).to.false;
-				expect(ev.metaKey).to.false;
+				expect(ev.ctrlKey).toBe(false);
+				expect(ev.altKey).toBe(false);
+				expect(ev.shiftKey).toBe(false);
+				expect(ev.metaKey).toBe(false);
 			});
 
 			it('.keyPress(Meta)', () => {
@@ -213,8 +213,8 @@ describe('Modifiers', () => {
 				expect(secondLastEv.code).to.equal('MetaLeft');
 				expect(lastEv.key).to.equal('Meta');
 				expect(lastEv.code).to.equal('MetaLeft');
-				expect(secondLastEv.metaKey).to.true;
-				expect(lastEv.metaKey).to.false;
+				expect(secondLastEv.metaKey).toBe(true);
+				expect(lastEv.metaKey).toBe(false);
 			});
 		});
 	});
@@ -225,28 +225,28 @@ describe('Modifiers', () => {
 
 			const ev1 = extractLastEvent(spy);
 
-			expect(ev1.ctrlKey).to.true;
-			expect(ev1.altKey).to.false;
-			expect(ev1.shiftKey).to.false;
-			expect(ev1.metaKey).to.false;
+			expect(ev1.ctrlKey).toBe(true);
+			expect(ev1.altKey).toBe(false);
+			expect(ev1.shiftKey).toBe(false);
+			expect(ev1.metaKey).toBe(false);
 
 			kbSim.keyDown('Alt');
 
 			const ev2 = extractLastEvent(spy);
 
-			expect(ev2.ctrlKey).to.true;
-			expect(ev2.altKey).to.true;
-			expect(ev2.shiftKey).to.false;
-			expect(ev2.metaKey).to.false;
+			expect(ev2.ctrlKey).toBe(true);
+			expect(ev2.altKey).toBe(true);
+			expect(ev2.shiftKey).toBe(false);
+			expect(ev2.metaKey).toBe(false);
 
 			kbSim.keyDown('A');
 
 			const ev3 = extractLastEvent(spy);
 
-			expect(ev3.ctrlKey).to.true;
-			expect(ev3.altKey).to.true;
-			expect(ev3.shiftKey).to.false;
-			expect(ev3.metaKey).to.false;
+			expect(ev3.ctrlKey).toBe(true);
+			expect(ev3.altKey).toBe(true);
+			expect(ev3.shiftKey).toBe(false);
+			expect(ev3.metaKey).toBe(false);
 
 			// --- keyup / keydown splitter
 
@@ -254,28 +254,28 @@ describe('Modifiers', () => {
 
 			const ev4 = extractLastEvent(spy);
 
-			expect(ev4.ctrlKey).to.true;
-			expect(ev4.altKey).to.true;
-			expect(ev4.shiftKey).to.false;
-			expect(ev4.metaKey).to.false;
+			expect(ev4.ctrlKey).toBe(true);
+			expect(ev4.altKey).toBe(true);
+			expect(ev4.shiftKey).toBe(false);
+			expect(ev4.metaKey).toBe(false);
 
 			kbSim.keyUp('Alt');
 
 			const ev5 = extractLastEvent(spy);
 
-			expect(ev5.ctrlKey).to.true;
-			expect(ev5.altKey).to.false;
-			expect(ev5.shiftKey).to.false;
-			expect(ev5.metaKey).to.false;
+			expect(ev5.ctrlKey).toBe(true);
+			expect(ev5.altKey).toBe(false);
+			expect(ev5.shiftKey).toBe(false);
+			expect(ev5.metaKey).toBe(false);
 
 			kbSim.keyUp('Ctrl');
 
 			const ev6 = extractLastEvent(spy);
 
-			expect(ev6.ctrlKey).to.false;
-			expect(ev6.altKey).to.false;
-			expect(ev6.shiftKey).to.false;
-			expect(ev6.metaKey).to.false;
+			expect(ev6.ctrlKey).toBe(false);
+			expect(ev6.altKey).toBe(false);
+			expect(ev6.shiftKey).toBe(false);
+			expect(ev6.metaKey).toBe(false);
 		});
 	});
 });

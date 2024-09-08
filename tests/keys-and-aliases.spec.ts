@@ -10,7 +10,7 @@ describe('KeyMap', () => {
 describe('Aliases', () => {
 	it('Each alias maps to a key', () => {
 		Object.keys(KeyAliases).forEach((alias) => {
-			expect(KeyAliases[alias as KeyAlias] in KeyMap).to.be.true;
+			expect(KeyAliases[alias as KeyAlias] in KeyMap).toBe(true);
 		});
 	});
 });

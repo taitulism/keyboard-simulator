@@ -296,7 +296,7 @@ describe('API', () => {
 				const ev1 = extractLastEvent(spy);
 
 				expect(ev1.key).to.equal('a');
-				expect(ev1.ctrlKey).to.false; // <--
+				expect(ev1.ctrlKey).toBe(false); // <--
 
 				kbSim.keyUp('A');
 
@@ -306,7 +306,7 @@ describe('API', () => {
 				const ev2 = extractLastEvent(spy);
 
 				expect(ev2.key).to.equal('a');
-				expect(ev2.ctrlKey).to.true; // <--
+				expect(ev2.ctrlKey).toBe(true); // <--
 
 				kbSim.releaseAll(); // Should release `Ctrl`
 
@@ -316,7 +316,7 @@ describe('API', () => {
 				const ev3 = extractLastEvent(spy);
 
 				expect(ev3.key).to.equal('a');
-				expect(ev3.ctrlKey).to.false; // <--
+				expect(ev3.ctrlKey).toBe(false); // <--
 			});
 		});
 	});
@@ -328,14 +328,14 @@ describe('API', () => {
 			let ev = extractLastEvent(spy);
 
 			expect(ev.key).to.equal('a');
-			expect(ev.ctrlKey).to.true; // <--
+			expect(ev.ctrlKey).toBe(true); // <--
 
 			kbSim.keyUp('A');
 			kbSim.keyDown('B');
 
 			ev = extractLastEvent(spy);
 			expect(ev.key).to.equal('b');
-			expect(ev.ctrlKey).to.true; // <--
+			expect(ev.ctrlKey).toBe(true); // <--
 
 			kbSim.keyUp('B');
 			kbSim.reset();
@@ -343,7 +343,7 @@ describe('API', () => {
 
 			ev = extractLastEvent(spy);
 			expect(ev.key).to.equal('c');
-			expect(ev.ctrlKey).to.false; // <--
+			expect(ev.ctrlKey).toBe(false); // <--
 		});
 
 		it('Resets held keys', () => {
