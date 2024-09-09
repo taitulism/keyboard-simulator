@@ -2,10 +2,12 @@ export type Modifier = keyof typeof Modifiers
 export type TogglerButton = keyof typeof TogglerButtons
 export type KeyId = keyof typeof KeyMap
 export type KeyAlias = keyof typeof KeyAliases
-export type KeyName = KeyId | KeyAlias
+export type Alias = KeyAlias | Uppercase<KeyAlias> | Capitalize<KeyAlias> | ExtraAliases
+export type KeyName = KeyId | Alias
 
-export const isKeyId = (key: KeyName): key is KeyId => key in KeyMap;
-export const isAlias = (key: KeyName): key is KeyAlias => key in KeyAliases;
+
+export const isKeyId = (key: string): key is KeyId => key in KeyMap;
+export const isAlias = (key: Lowercase<string>): key is KeyAlias => key in KeyAliases;
 export const isModifier = (str: string): str is Modifier => str in Modifiers;
 export const isTogglerBtn = (str: string): str is TogglerButton => str in TogglerButtons;
 
@@ -25,7 +27,10 @@ export const getKeyValue = (keyId: KeyId, isAlterValue: boolean) => {
 
 export const getKeyId = (keyName: KeyName): KeyId => {
 	if (isKeyId(keyName)) return keyName;
-	if (isAlias(keyName)) return KeyAliases[keyName];
+
+	const lower = keyName.toLowerCase() as Lowercase<string>;
+
+	if (isAlias(lower)) return KeyAliases[lower];
 
 	throw new Error(`Unknown key name: ${keyName}`);
 };
@@ -185,36 +190,38 @@ export const KeyMap = {
 
 /* ======================================================= */
 
+// All keys are lowercased
 export const KeyAliases = {
 	// Letters
-	A: 'KeyA',
-	B: 'KeyB',
-	C: 'KeyC',
-	D: 'KeyD',
-	E: 'KeyE',
-	F: 'KeyF',
-	G: 'KeyG',
-	H: 'KeyH',
-	I: 'KeyI',
-	J: 'KeyJ',
-	K: 'KeyK',
-	L: 'KeyL',
-	M: 'KeyM',
-	N: 'KeyN',
-	O: 'KeyO',
-	P: 'KeyP',
-	Q: 'KeyQ',
-	R: 'KeyR',
-	S: 'KeyS',
-	T: 'KeyT',
-	U: 'KeyU',
-	V: 'KeyV',
-	W: 'KeyW',
-	X: 'KeyX',
-	Y: 'KeyY',
-	Z: 'KeyZ',
+	a: 'KeyA',
+	b: 'KeyB',
+	c: 'KeyC',
+	d: 'KeyD',
+	e: 'KeyE',
+	f: 'KeyF',
+	g: 'KeyG',
+	h: 'KeyH',
+	i: 'KeyI',
+	j: 'KeyJ',
+	k: 'KeyK',
+	l: 'KeyL',
+	m: 'KeyM',
+	n: 'KeyN',
+	o: 'KeyO',
+	p: 'KeyP',
+	q: 'KeyQ',
+	r: 'KeyR',
+	s: 'KeyS',
+	t: 'KeyT',
+	u: 'KeyU',
+	v: 'KeyV',
+	w: 'KeyW',
+	x: 'KeyX',
+	y: 'KeyY',
+	z: 'KeyZ',
 
 	// Numbers
+	'0': 'Digit0',
 	'1': 'Digit1',
 	'2': 'Digit2',
 	'3': 'Digit3',
@@ -224,32 +231,46 @@ export const KeyAliases = {
 	'7': 'Digit7',
 	'8': 'Digit8',
 	'9': 'Digit9',
-	'0': 'Digit0',
 
-	BackSlash: 'Backslash',
-	SingleQuote: 'Quote',
-	BackQuote: 'Backquote',
-	BackTick: 'Backquote',
-	SemiColon: 'Semicolon',
+	singlequote: 'Quote',
+	backtick: 'Backquote',
+	semicolon: 'Semicolon',
 
-	Up: 'ArrowUp',
-	Right: 'ArrowRight',
-	Down: 'ArrowDown',
-	Left: 'ArrowLeft',
-	PgUp: 'PageUp',
-	PgDn: 'PageDown',
+	up: 'ArrowUp',
+	right: 'ArrowRight',
+	down: 'ArrowDown',
+	left: 'ArrowLeft',
+	pgup: 'PageUp',
+	pgdn: 'PageDown',
 
 	// Modifiers
-	Ctrl: 'ControlLeft',
-	LCtrl: 'ControlLeft',
-	RCtrl: 'ControlRight',
-	Alt: 'AltLeft',
-	LAlt: 'AltLeft',
-	RAlt: 'AltRight',
-	Shift: 'ShiftLeft',
-	LShift: 'ShiftLeft',
-	RShift: 'ShiftRight',
-	Meta: 'MetaLeft',
-	LMeta: 'MetaLeft',
-	RMeta: 'MetaRight',
+	ctrl: 'ControlLeft',
+	control: 'ControlLeft',
+	lctrl: 'ControlLeft',
+	rctrl: 'ControlRight',
+	alt: 'AltLeft',
+	lalt: 'AltLeft',
+	ralt: 'AltRight',
+	shift: 'ShiftLeft',
+	lshift: 'ShiftLeft',
+	rshift: 'ShiftRight',
+	meta: 'MetaLeft',
+	lmeta: 'MetaLeft',
+	rmeta: 'MetaRight',
 } as const;
+
+// For special CaSeS. All must match an existing lowercased KeyAlias
+export type ExtraAliases =
+	| 'SingleQuote'
+	| 'BackTick'
+	| 'SemiColon'
+	| 'PgUp'
+	| 'PgDn'
+	| 'LCtrl'
+	| 'RCtrl'
+	| 'LAlt'
+	| 'RAlt'
+	| 'LShift'
+	| 'RShift'
+	| 'LMeta'
+	| 'RMeta'
