@@ -6,12 +6,12 @@ Keyboard Simulator
 ==================
 Simulate key presess.
 
-Currently only supports EN-US keyboard layout.
+Currently only supports EN-US Qwerty keyboard layout.
 
 The key point of this library is mimicking a real keyboard so you can't press a key that is already pressed down and you cannot release a key that is not pressed down.
 Holding the `Shift` key makes the following key presses generate the alternative values for the relevant keys (pressing `2` while shift is down generates `@` instead).
 
-> `CapsLock` and `NumLock` that when are `ON` generate alternative values are not supported yet in a similar way.
+> Also support `CapsLock` and `NumLock` alternative values.
 
 Also, holding a modifier key down (`Control`, `Alt`, `Shift`, `Meta`) updates following events accordingly (e.g. `ev.ctrlKey = true`).
 
@@ -48,6 +48,7 @@ The default is `document`. Returns a `KeyboardSimulator` instance that has the f
 * `.keyDown()`
 * `.keyUp()`
 * `.keyPress()`
+* `.keyPressAsOne()`
 * `.holdKey()`
 * `.releaseAll()`
 * `.setContextElement()`
@@ -82,11 +83,18 @@ kbSim.keyUp('A'); // ERROR
 ```
 
 ### .keyPress(...keys)
-Dispatches `keydown` followed by `keyup` events for each given key. Returns an array of two booleans (per key, one for the `keydown` event and one for `keyup`) or an array of array of two booleans if passed in multiple keys.
+Dispatches `keydown` followed by `keyup` events for each given key, like user typing. Returns an array of two booleans (per key, one for the `keydown` event and one for `keyup`) or an array of array of two booleans if passed in multiple keys.
 
 ```js
 kbSim.keyPress('A');
 kbSim.keyPress('A', 'B', 'C');
+```
+
+### .keyPressAsOne([keys])
+First, dispatches `keydown` events for all given keys, then dispatches all the `keyup` events, like a key combination (e.g.`Ctrl-A`). Returns an array of two booleans (per key, one for the `keydown` event and one for `keyup`) or an array of array of two booleans if passed in multiple keys.
+
+```js
+kbSim.keyPressAsOne(['Ctrl', 'A']);
 ```
 
 ### .holdKey(key, repeatCount)

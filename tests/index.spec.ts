@@ -28,6 +28,11 @@ describe('KeyboardSimulator', () => {
 			expect(kbSim.keyPress).to.be.a('function');
 		});
 
+		it('.keyPressAsOne()', () => {
+			expect(kbSim).toHaveProperty('keyPressAsOne');
+			expect(kbSim.keyPressAsOne).to.be.a('function');
+		});
+
 		it('.holdKey()', () => {
 			expect(kbSim).toHaveProperty('holdKey');
 			expect(kbSim.holdKey).to.be.a('function');

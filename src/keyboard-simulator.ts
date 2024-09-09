@@ -13,6 +13,7 @@ import {
 
 export type ContextElement = HTMLElement | Document
 export type EventType = 'keydown' | 'keyup'
+export type KeyPressDispatchResults = [boolean, boolean]
 
 export class KeyboardSimulator {
 	private isCtrlDown = false;
@@ -99,8 +100,8 @@ export class KeyboardSimulator {
 		return (dispatchResults.length === 1) ? dispatchResults[0] : dispatchResults;
 	}
 
-	public keyPress (key: KeyName): Array<boolean>;
-	public keyPress (...keys: Array<KeyName>): Array<Array<boolean>>;
+	public keyPress (key: KeyName): KeyPressDispatchResults;
+	public keyPress (...keys: Array<KeyName>): Array<KeyPressDispatchResults>;
 	public keyPress (...keys: Array<KeyName>) {
 		const dispatchResults = keys.map((key) => [
 			this.keyDown(key),
@@ -108,6 +109,15 @@ export class KeyboardSimulator {
 		]);
 
 		return (dispatchResults.length === 1) ? dispatchResults[0] : dispatchResults;
+	}
+
+	public keyPressAsOne (keys: Array<KeyName>): Array<KeyPressDispatchResults> {
+		const dispatchDownResults = keys.map((key) => this.keyDown(key));
+
+		const dispatchResults = keys.reverse()
+			.map((key, i) => ([dispatchDownResults[i], this.keyUp(key)]));
+
+		return dispatchResults as Array<KeyPressDispatchResults>;
 	}
 
 	private createKeyboardEvent (
@@ -154,11 +164,9 @@ export class KeyboardSimulator {
 	}
 
 	public releaseAll () {
-		const dispatches: Array<boolean> = [];
-
-		Array.from(this.heldKeys).reverse().forEach((key) => {
-			dispatches.push(this.keyUp(key));
-		});
+		const dispatches = Array.from(this.heldKeys)
+			.reverse()
+			.map((key) => this.keyUp(key));
 
 		this.heldKeys.clear();
 

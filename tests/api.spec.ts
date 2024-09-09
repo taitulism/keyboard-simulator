@@ -176,10 +176,9 @@ describe('API', () => {
 				expect(lastEv.key).to.equal('a');
 				expect(lastEv.code).to.equal('KeyA');
 				expect(lastEv.type).to.equal('keyup');
-
 			});
 
-			it('Handles multiple keys', () => {
+			it('Handles multiple key presses, one after another', () => {
 				kbSim.keyPress('A', 'B');
 
 				const [ev1, ev2, ev3, ev4] = extractLastEvents(spy, 4);
@@ -201,7 +200,7 @@ describe('API', () => {
 				expect(ev4.type).to.equal('keyup');
 			});
 
-			it('For a single key: returns an array of "cancelable" booleans', () => {
+			it('For a single key: returns a tuple of two "cancelable" booleans', () => {
 				const single = kbSim.keyPress('A');
 
 				expect(single).to.be.an('Array');
@@ -210,9 +209,50 @@ describe('API', () => {
 				expect(single[1]).to.be.a('Boolean');
 			});
 
-			it('For multiple keys: returns an array of array of "cancelable" booleans', () => {
+			it('For multiple keys: returns an array of tuples of two "cancelable" booleans', () => {
 				const multi = kbSim.keyPress('A', 'B');
 
+				// multi = [[true, true], [true, true]]
+				expect(multi).to.be.an('Array');
+				expect(multi).to.have.lengthOf(2);
+				expect(multi[0]).to.be.an('Array');
+				expect(multi[0]).to.have.lengthOf(2);
+				expect(multi[0][0]).to.be.a('Boolean');
+				expect(multi[0][1]).to.be.a('Boolean');
+				expect(multi[1]).to.be.an('Array');
+				expect(multi[1]).to.have.lengthOf(2);
+				expect(multi[1][0]).to.be.a('Boolean');
+				expect(multi[1][1]).to.be.a('Boolean');
+			});
+		});
+
+		describe('.keyPressAsOne()', () => {
+			it('Handles multiple keys combination', () => {
+				expect(spy.mock.calls.length).to.equal(0);
+				kbSim.keyPressAsOne(['Ctrl', 'A']);
+				expect(spy.mock.calls.length).to.equal(4);
+
+				const [ev1, ev2, ev3, ev4] = extractLastEvents(spy, 4);
+
+				expect(ev1.code).to.equal('ControlLeft');
+				expect(ev1.type).to.equal('keydown');
+
+				expect(ev2.code).to.equal('KeyA');
+				expect(ev2.type).to.equal('keydown');
+				expect(ev2.ctrlKey).toBe(true);
+
+				expect(ev3.code).to.equal('KeyA');
+				expect(ev3.type).to.equal('keyup');
+				expect(ev2.ctrlKey).toBe(true);
+
+				expect(ev4.code).to.equal('ControlLeft');
+				expect(ev4.type).to.equal('keyup');
+			});
+
+			it('Returns an array of tuples of two "cancelable" booleans', () => {
+				const multi = kbSim.keyPressAsOne(['A', 'B']);
+
+				// multi = [[true, true], [true, true]]
 				expect(multi).to.be.an('Array');
 				expect(multi).to.have.lengthOf(2);
 				expect(multi[0]).to.be.an('Array');
