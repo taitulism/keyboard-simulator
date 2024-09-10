@@ -10,6 +10,7 @@ export const isKeyId = (key: string): key is KeyId => key in KeyMap;
 export const isAlias = (key: Lowercase<string>): key is KeyAlias => key in KeyAliases;
 export const isModifier = (str: string): str is Modifier => str in Modifiers;
 export const isTogglerBtn = (str: string): str is TogglerButton => str in TogglerButtons;
+export const isAffectedByNumLock = (keyId: KeyId) => /Numpad\d/.test(keyId) || keyId.endsWith('Decimal');
 
 export const getKeyValue = (keyId: KeyId, isAlterValue: boolean) => {
 	// value = single or array
@@ -257,6 +258,8 @@ export const KeyAliases = {
 	meta: 'MetaLeft',
 	lmeta: 'MetaLeft',
 	rmeta: 'MetaRight',
+
+	esc: 'Escape',
 } as const;
 
 // For special CaSeS. All must match an existing lowercased KeyAlias

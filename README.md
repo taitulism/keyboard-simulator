@@ -4,18 +4,30 @@
 
 Keyboard Simulator
 ==================
-Simulate key presess.
+A smart keyboard events dispatcher.
+
+Keyboard Simulator aims to mimick a real keyboard behavior by keeping track of its key activation (e.g. `kb.keyDown()`).  
+Generated events are shaped according to the different keyboard states.
 
 Currently only supports EN-US Qwerty keyboard layout.
 
-The key point of this library is mimicking a real keyboard so you can't press a key that is already pressed down and you cannot release a key that is not pressed down.
-Holding the `Shift` key makes the following key presses generate the alternative values for the relevant keys (pressing `2` while shift is down generates `@` instead).
+Key features:
+* The value of `event.key` will be set to (for the relevant keys):
+	* **Digits** when `NumLock` is on
+	* **Uppercase letters** when `CapsLock` is on
+	* **Uppercase letters** when `Shift` is pressed down
+	* **Alternative symbols** when `Shift` is pressed down
+* When a modifier key is pressed down (Control, Alt, Shift, Meta) the following event properties will be set to `true` accordingly:
+	* `event.ctrlKey`
+	* `event.altKey`
+	* `event.shiftKey`
+	* `event.metaKey`
+* Pressing an already-down key is prevented
+* Releasing a non-pressed key is prevented
 
-> Also support `CapsLock` and `NumLock` alternative values.
+> **Note:** `NumLock` is on by default. `CapsLock` and `ScrollLock` are off.
 
-Also, holding a modifier key down (`Control`, `Alt`, `Shift`, `Meta`) updates following events accordingly (e.g. `ev.ctrlKey = true`).
-
-TODO: add supported key list
+_TODO: add supported key list_
 
 Install
 -------

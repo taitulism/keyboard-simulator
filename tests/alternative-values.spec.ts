@@ -41,20 +41,7 @@ describe('Alternative Values', () => {
 				['NumpadDecimal', 'Delete'],
 			]);
 
-			// `NumLock` OFF
-			numpadKeys.forEach((nonNumber, keyId) => {
-				kbSim.keyDown(keyId);
-
-				const ev = extractLastEvent(spy);
-
-				expect(ev.code).to.equal(keyId);
-				expect(ev.key).to.equal(nonNumber);
-				kbSim.keyUp(keyId);
-			});
-
 			// `NumLock` ON
-			kbSim.keyPress('NumLock');
-
 			numpadKeys.forEach((value, keyId) => {
 				kbSim.keyDown(keyId);
 
@@ -65,10 +52,25 @@ describe('Alternative Values', () => {
 				if (keyId === 'NumpadDecimal') {
 					expect(ev.key).to.equal('.');
 				}
-				else { // NumpadX --> X
-					expect(ev.key).to.equal(keyId[keyId.length - 1]);
+				else {
+					const digit = keyId[keyId.length - 1]; // NumpadX --> X
+
+					expect(ev.key).to.equal(digit);
 				}
 
+				kbSim.keyUp(keyId);
+			});
+
+			// `NumLock` OFF
+			kbSim.keyPress('NumLock');
+
+			numpadKeys.forEach((nonNumber, keyId) => {
+				kbSim.keyDown(keyId);
+
+				const ev = extractLastEvent(spy);
+
+				expect(ev.code).to.equal(keyId);
+				expect(ev.key).to.equal(nonNumber);
 				kbSim.keyUp(keyId);
 			});
 		});

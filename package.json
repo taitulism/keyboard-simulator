@@ -1,6 +1,6 @@
 {
 	"name": "keyboard-simulator",
-	"description": "Simulate key presess.",
+	"description": "A smart keyboard events dispatcher.",
 	"version": "0.0.4",
 	"license": "MIT",
 	"main": "./src/index.ts",
@@ -61,6 +61,9 @@
 		"simulator",
 		"simulate",
 		"dispatch",
-		"KeyboardEvent"
+		"KeyboardEvent",
+		"keydown",
+		"keyup",
+		"keypress"
 	]
 }

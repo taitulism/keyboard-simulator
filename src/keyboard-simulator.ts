@@ -9,6 +9,7 @@ import {
 	isTogglerBtn,
 	TogglerButton,
 	TogglerButtons,
+	isAffectedByNumLock,
 } from './key-codes';
 
 export type ContextElement = HTMLElement | Document
@@ -21,8 +22,8 @@ export class KeyboardSimulator {
 	private isShiftDown = false;
 	private isMetaDown = false;
 	private isCapsLockOn = false;
-	private isNumLockOn = false;
 	private isScrollLockOn = false;
+	private isNumLockOn = true;
 	private heldKeys = new Set<KeyName>();
 
 	constructor (public ctxElm: ContextElement = document) {}
@@ -43,7 +44,7 @@ export class KeyboardSimulator {
 		this.isShiftDown = false;
 		this.isMetaDown = false;
 		this.isCapsLockOn = false;
-		this.isNumLockOn = false;
+		this.isNumLockOn = true;
 		this.isScrollLockOn = false;
 		this.heldKeys.clear();
 	}
@@ -125,8 +126,10 @@ export class KeyboardSimulator {
 		keyName: KeyName,
 		repeat: boolean = false,
 	) {
-		const isAlternativeValue = this.isShiftDown || this.isCapsLockOn || this.isNumLockOn;
 		const keyId = getKeyId(keyName);
+		const isAlternativeValue = isAffectedByNumLock(keyId) && this.isNumLockOn
+			|| this.isShiftDown
+			|| this.isCapsLockOn;
 		const keyValue = getKeyValue(keyId, isAlternativeValue);
 
 		return new KeyboardEvent(eventType, {
