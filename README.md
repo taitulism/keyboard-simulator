@@ -27,7 +27,7 @@ Key features:
 
 > **Note:** `NumLock` is on by default. `CapsLock` and `ScrollLock` are off.
 
-_TODO: add supported key list_
+Scroll down to see the [Key List](#keys-list)
 
 Install
 -------
@@ -145,3 +145,139 @@ kbSim.keyDown('A'); // ERROR - key 'A' is already pressed down
 kbSim.reset();
 kbSim.keyDown('A'); // OK
 ```
+
+Keys
+----
+The Keyboard Simulator instance's methods expect a `KeyName` type or an array of them.
+
+`KeyName` could be either a standard key ID (`ev.code`) or an alias, provided by Keyboard Simulator.
+
+A key ID is like an identifier of a specific physical key on a keyboad. Aliases are just for sugar.
+
+For example, there is no such key as `Control`, there are only `ControlLeft` and `ControlRight` key IDs. `Control` is their common generated value.  
+That said, using key aliases you can use `Control` or `Ctrl`. Both are mapped to `ControlLeft`.
+
+### Keys List
+>**NOTE:**  
+Key IDs are case sensitive. Aliases are not.  
+Not all keys have aliases.
+
+
+| Key ID         | Aliases                |
+|----------------|------------------------|
+| KeyA           | A                      |
+| KeyB           | B                      |
+| KeyC           | C                      |
+| KeyD           | D                      |
+| KeyE           | E                      |
+| KeyF           | F                      |
+| KeyG           | G                      |
+| KeyH           | H                      |
+| KeyI           | I                      |
+| KeyJ           | J                      |
+| KeyK           | K                      |
+| KeyL           | L                      |
+| KeyM           | M                      |
+| KeyN           | N                      |
+| KeyO           | O                      |
+| KeyP           | P                      |
+| KeyQ           | Q                      |
+| KeyR           | R                      |
+| KeyS           | S                      |
+| KeyT           | T                      |
+| KeyU           | U                      |
+| KeyV           | V                      |
+| KeyW           | W                      |
+| KeyX           | X                      |
+| KeyY           | Y                      |
+| KeyZ           | Z                      |
+| Digit0         | 0                      |
+| Digit1         | 1                      |
+| Digit2         | 2                      |
+| Digit3         | 3                      |
+| Digit4         | 4                      |
+| Digit5         | 5                      |
+| Digit6         | 6                      |
+| Digit7         | 7                      |
+| Digit8         | 8                      |
+| Digit9         | 9                      |
+| Slash          |                        |
+| Backslash      |                        |
+| Period         |                        |
+| Comma          |                        |
+| Quote          | SingleQuote            |
+| Backquote      | BackTick               |
+| Semicolon      | SemiColon              |
+| BracketLeft    |                        |
+| BracketRight   |                        |
+| Minus          |                        |
+| Equal          |                        |
+| Insert         |                        |
+| Delete         |                        |
+| Enter          |                        |
+| NumpadEnter    |                        |
+| Space          |                        |
+| Backspace      |                        |
+| Tab            |                        |
+| ArrowUp        | Up                     |
+| ArrowRight     | Right                  |
+| ArrowDown      | Down                   |
+| ArrowLeft      | Left                   |
+| PageUp         | PgDn                   |
+| PageDown       | PgUp                   |
+| Home           |                        |
+| End            |                        |
+| Numpad0        |                        |
+| Numpad1        |                        |
+| Numpad2        |                        |
+| Numpad3        |                        |
+| Numpad4        |                        |
+| Numpad5        |                        |
+| Numpad6        |                        |
+| Numpad7        |                        |
+| Numpad8        |                        |
+| Numpad9        |                        |
+| NumpadDecimal  |                        |
+| NumpadDivide   |                        |
+| NumpadSubtract |                        |
+| NumpadMultiply |                        |
+| NumpadAdd      |                        |
+| ControlLeft    | Ctrl / Control / LCtrl |
+| ControlRight   | RCtrl                  |
+| AltLeft        | Alt / LAlt             |
+| AltRight       | RAlt                   |
+| ShiftLeft      | Shift / LShift         |
+| ShiftRight     | RShift                 |
+| MetaLeft       | Meta / LMeta           |
+| MetaRight      | RMeta                  |
+| F1             |                        |
+| F2             |                        |
+| F3             |                        |
+| F4             |                        |
+| F5             |                        |
+| F6             |                        |
+| F7             |                        |
+| F8             |                        |
+| F9             |                        |
+| F10            |                        |
+| F11            |                        |
+| F12            |                        |
+| F13            |                        |
+| F14            |                        |
+| F15            |                        |
+| F16            |                        |
+| F17            |                        |
+| F18            |                        |
+| F19            |                        |
+| F20            |                        |
+| F21            |                        |
+| F22            |                        |
+| F23            |                        |
+| F24            |                        |
+| Pause          |                        |
+| PrintScreen    |                        |
+| ScrollLock     |                        |
+| NumLock        |                        |
+| CapsLock       |                        |
+| ContextMenu    |                        |
+| Escape         | Esc                    |
