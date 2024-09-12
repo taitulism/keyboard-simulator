@@ -1,14 +1,13 @@
+import {KeyId} from '~key-id.type';
 import {
 	type KeyName,
-	type KeyId,
-	type Modifier,
+	type ModifierID,
 	isModifier,
-	Modifiers,
+	ModifierNumbers,
 	getKeyId,
 	getKeyValue,
 	isTogglerBtn,
 	TogglerButton,
-	TogglerButtons,
 	isAffectedByNumLock,
 } from './key-codes';
 
@@ -49,18 +48,16 @@ export class KeyboardSimulator {
 		this.heldKeys.clear();
 	}
 
-	private toggleModifier (key: Modifier, isPressed: boolean = false) {
-		const modifier = Modifiers[key];
+	private toggleModifier (keyId: ModifierID, isPressed: boolean = false) {
+		const modifier = ModifierNumbers[keyId];
 
-		if (modifier === 'Ctrl') this.isCtrlDown = isPressed;
-		else if (modifier === 'Alt') this.isAltDown = isPressed;
-		else if (modifier === 'Shift') this.isShiftDown = isPressed;
-		else if (modifier === 'Meta') this.isMetaDown = isPressed;
+		if (modifier === 1) this.isCtrlDown = isPressed;
+		else if (modifier === 2) this.isAltDown = isPressed;
+		else if (modifier === 3) this.isShiftDown = isPressed;
+		else if (modifier === 4) this.isMetaDown = isPressed;
 	}
 
-	private toggleToggler (key: TogglerButton) {
-		const togglerBtn = TogglerButtons[key];
-
+	private toggleToggler (togglerBtn: TogglerButton) {
 		if (togglerBtn === 'NumLock') this.isNumLockOn = !this.isNumLockOn;
 		else if (togglerBtn === 'CapsLock') this.isCapsLockOn = !this.isCapsLockOn;
 		else if (togglerBtn === 'ScrollLock') this.isScrollLockOn = !this.isScrollLockOn;

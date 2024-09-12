@@ -1,16 +1,30 @@
-export type Modifier = keyof typeof Modifiers
-export type TogglerButton = keyof typeof TogglerButtons
-export type KeyId = keyof typeof KeyMap
+import {KeyId} from '~key-id.type';
+
+export type ModifierID = keyof typeof ModifierNumbers
+export type TogglerButton = typeof TogglerButtons[number]
 export type KeyAlias = keyof typeof KeyAliases
 export type Alias = KeyAlias | Uppercase<KeyAlias> | Capitalize<KeyAlias> | ExtraAliases
 export type KeyName = KeyId | Alias
 
+const TogglerButtons = ['NumLock', 'CapsLock', 'ScrollLock'] as const;
+const isAlias = (key: Lowercase<string>): key is KeyAlias => key in KeyAliases;
+const isKeyId = (key: string): key is KeyId => key in KeyMap;
 
-export const isKeyId = (key: string): key is KeyId => key in KeyMap;
-export const isAlias = (key: Lowercase<string>): key is KeyAlias => key in KeyAliases;
-export const isModifier = (str: string): str is Modifier => str in Modifiers;
-export const isTogglerBtn = (str: string): str is TogglerButton => str in TogglerButtons;
+export const isModifier = (str: string): str is ModifierID => str in ModifierNumbers;
+export const isTogglerBtn = (str: string): str is TogglerButton =>
+	TogglerButtons.includes(str as TogglerButton);
+
 export const isAffectedByNumLock = (keyId: KeyId) => /Numpad\d/.test(keyId) || keyId.endsWith('Decimal');
+
+export const getKeyId = (keyName: KeyName): KeyId => {
+	if (isKeyId(keyName)) return keyName;
+
+	const lower = keyName.toLowerCase() as Lowercase<string>;
+
+	if (isAlias(lower)) return KeyAliases[lower];
+
+	throw new Error(`Unknown key name: ${keyName}`);
+};
 
 export const getKeyValue = (keyId: KeyId, isAlterValue: boolean) => {
 	// value = single or array
@@ -26,31 +40,15 @@ export const getKeyValue = (keyId: KeyId, isAlterValue: boolean) => {
 	return value;
 };
 
-export const getKeyId = (keyName: KeyName): KeyId => {
-	if (isKeyId(keyName)) return keyName;
-
-	const lower = keyName.toLowerCase() as Lowercase<string>;
-
-	if (isAlias(lower)) return KeyAliases[lower];
-
-	throw new Error(`Unknown key name: ${keyName}`);
-};
-
-export const Modifiers = {
-	ControlLeft: 'Ctrl',
-	ControlRight: 'Ctrl',
-	AltLeft: 'Alt',
-	AltRight: 'Alt',
-	ShiftLeft: 'Shift',
-	ShiftRight: 'Shift',
-	MetaLeft: 'Meta',
-	MetaRight: 'Meta',
-} as const;
-
-export const TogglerButtons = {
-	NumLock: 'NumLock',
-	CapsLock: 'CapsLock',
-	ScrollLock: 'ScrollLock',
+export const ModifierNumbers = {
+	ControlLeft: 1,
+	ControlRight: 1,
+	AltLeft: 2,
+	AltRight: 2,
+	ShiftLeft: 3,
+	ShiftRight: 3,
+	MetaLeft: 4,
+	MetaRight: 4,
 } as const;
 
 export const KeyMap = {
@@ -94,7 +92,44 @@ export const KeyMap = {
 	Digit9: ['9', '('],
 	Digit0: ['0', ')'],
 
-	// Other Characters
+	// NumPad (Numlock)
+	Numpad0: ['Insert', '0'],
+	Numpad1: ['End', '1'],
+	Numpad2: ['ArrowDown', '2'],
+	Numpad3: ['PageDown', '3'],
+	Numpad4: ['ArrowLeft', '4'],
+	Numpad5: ['Clear', '5'],
+	Numpad6: ['ArrowRight', '6'],
+	Numpad7: ['Home', '7'],
+	Numpad8: ['ArrowUp', '8'],
+	Numpad9: ['PageUp', '9'],
+	NumpadDecimal: ['Delete', '.'],
+	NumpadDivide: '/',
+	NumpadSubtract: '-',
+	NumpadMultiply: '*',
+	NumpadAdd: '+',
+
+	// Arrows / Navigation
+	ArrowUp: 'ArrowUp',
+	ArrowRight: 'ArrowRight',
+	ArrowDown: 'ArrowDown',
+	ArrowLeft: 'ArrowLeft',
+	PageUp: 'PageUp',
+	PageDown: 'PageDown',
+	Home: 'Home',
+	End: 'End',
+
+	// Modifiers
+	ControlLeft: 'Control',
+	ControlRight: 'Control',
+	AltLeft: 'Alt',
+	AltRight: 'Alt',
+	ShiftLeft: 'Shift',
+	ShiftRight: 'Shift',
+	MetaLeft: 'Meta',
+	MetaRight: 'Meta',
+
+	// Symbols
 	Slash: ['/', '?'],
 	Backslash: ['\\', '|'],
 	Period: ['.', '>'],
@@ -115,43 +150,6 @@ export const KeyMap = {
 	Space: ' ',
 	Backspace: 'Backspace',
 	Tab: 'Tab',
-
-	// Page / Caret Navigation
-	ArrowUp: 'ArrowUp',
-	ArrowRight: 'ArrowRight',
-	ArrowDown: 'ArrowDown',
-	ArrowLeft: 'ArrowLeft',
-	PageUp: 'PageUp',
-	PageDown: 'PageDown',
-	Home: 'Home',
-	End: 'End',
-
-	// NumPad (Numlock)
-	Numpad0: ['Insert', '0'],
-	Numpad1: ['End', '1'],
-	Numpad2: ['ArrowDown', '2'],
-	Numpad3: ['PageDown', '3'],
-	Numpad4: ['ArrowLeft', '4'],
-	Numpad5: ['Clear', '5'],
-	Numpad6: ['ArrowRight', '6'],
-	Numpad7: ['Home', '7'],
-	Numpad8: ['ArrowUp', '8'],
-	Numpad9: ['PageUp', '9'],
-	NumpadDecimal: ['Delete', '.'],
-	NumpadDivide: '/',
-	NumpadSubtract: '-',
-	NumpadMultiply: '*',
-	NumpadAdd: '+',
-
-	// Modifiers
-	ControlLeft: 'Control',
-	ControlRight: 'Control',
-	AltLeft: 'Alt',
-	AltRight: 'Alt',
-	ShiftLeft: 'Shift',
-	ShiftRight: 'Shift',
-	MetaLeft: 'Meta',
-	MetaRight: 'Meta',
 
 	// Fn
 	F1: 'F1',
@@ -179,7 +177,7 @@ export const KeyMap = {
 	F23: 'F23',
 	F24: 'F24',
 
-	// The Rest
+	// Others
 	Pause: 'Pause',
 	PrintScreen: 'PrintScreen',
 	ScrollLock: 'ScrollLock',
@@ -233,10 +231,24 @@ export const KeyAliases = {
 	'8': 'Digit8',
 	'9': 'Digit9',
 
-	singlequote: 'Quote',
-	backtick: 'Backquote',
-	semicolon: 'Semicolon',
+	np0: 'Numpad0',
+	np1: 'Numpad1',
+	np2: 'Numpad2',
+	np3: 'Numpad3',
+	np4: 'Numpad4',
+	np5: 'Numpad5',
+	np6: 'Numpad6',
+	np7: 'Numpad7',
+	np8: 'Numpad8',
+	np9: 'Numpad9',
 
+	decimal: 'NumpadDecimal',
+	divide: 'NumpadDivide',
+	subtract: 'NumpadSubtract',
+	multiply: 'NumpadMultiply',
+	add: 'NumpadAdd',
+
+	// Arrows / Navigation
 	up: 'ArrowUp',
 	right: 'ArrowRight',
 	down: 'ArrowDown',
@@ -245,8 +257,8 @@ export const KeyAliases = {
 	pgdn: 'PageDown',
 
 	// Modifiers
-	ctrl: 'ControlLeft',
 	control: 'ControlLeft',
+	ctrl: 'ControlLeft',
 	lctrl: 'ControlLeft',
 	rctrl: 'ControlRight',
 	alt: 'AltLeft',
@@ -259,14 +271,22 @@ export const KeyAliases = {
 	lmeta: 'MetaLeft',
 	rmeta: 'MetaRight',
 
+	// Symbols
+	singlequote: 'Quote',
+	backtick: 'Backquote',
+
+	// Enter / Spaces
+	npenter: 'NumpadEnter',
+	renter: 'NumpadEnter',
+	del: 'Delete',
+	ins: 'Insert',
+
+	// Others
 	esc: 'Escape',
 } as const;
 
 // For special CaSeS. All must match an existing lowercased KeyAlias
 export type ExtraAliases =
-	| 'SingleQuote'
-	| 'BackTick'
-	| 'SemiColon'
 	| 'PgUp'
 	| 'PgDn'
 	| 'LCtrl'
@@ -277,3 +297,7 @@ export type ExtraAliases =
 	| 'RShift'
 	| 'LMeta'
 	| 'RMeta'
+	| 'SingleQuote'
+	| 'BackTick'
+	| 'NpEnter'
+	| 'REnter'

@@ -201,47 +201,29 @@ Not all keys have aliases.
 | Digit7         | 7                      |
 | Digit8         | 8                      |
 | Digit9         | 9                      |
-| Slash          |                        |
-| Backslash      |                        |
-| Period         |                        |
-| Comma          |                        |
-| Quote          | SingleQuote            |
-| Backquote      | BackTick               |
-| Semicolon      | SemiColon              |
-| BracketLeft    |                        |
-| BracketRight   |                        |
-| Minus          |                        |
-| Equal          |                        |
-| Insert         |                        |
-| Delete         |                        |
-| Enter          |                        |
-| NumpadEnter    |                        |
-| Space          |                        |
-| Backspace      |                        |
-| Tab            |                        |
+| Numpad0        | Np0                    |
+| Numpad1        | Np1                    |
+| Numpad2        | Np2                    |
+| Numpad3        | Np3                    |
+| Numpad4        | Np4                    |
+| Numpad5        | Np5                    |
+| Numpad6        | Np6                    |
+| Numpad7        | Np7                    |
+| Numpad8        | Np8                    |
+| Numpad9        | Np9                    |
+| NumpadDecimal  | Decimal                |
+| NumpadDivide   | Divide                 |
+| NumpadSubtract | Subtract               |
+| NumpadMultiply | Multiply               |
+| NumpadAdd      | Add                    |
 | ArrowUp        | Up                     |
 | ArrowRight     | Right                  |
 | ArrowDown      | Down                   |
 | ArrowLeft      | Left                   |
-| PageUp         | PgDn                   |
-| PageDown       | PgUp                   |
+| PageUp         | PgUp                   |
+| PageDown       | PgDn                   |
 | Home           |                        |
 | End            |                        |
-| Numpad0        |                        |
-| Numpad1        |                        |
-| Numpad2        |                        |
-| Numpad3        |                        |
-| Numpad4        |                        |
-| Numpad5        |                        |
-| Numpad6        |                        |
-| Numpad7        |                        |
-| Numpad8        |                        |
-| Numpad9        |                        |
-| NumpadDecimal  |                        |
-| NumpadDivide   |                        |
-| NumpadSubtract |                        |
-| NumpadMultiply |                        |
-| NumpadAdd      |                        |
 | ControlLeft    | Ctrl / Control / LCtrl |
 | ControlRight   | RCtrl                  |
 | AltLeft        | Alt / LAlt             |
@@ -250,6 +232,31 @@ Not all keys have aliases.
 | ShiftRight     | RShift                 |
 | MetaLeft       | Meta / LMeta           |
 | MetaRight      | RMeta                  |
+| Slash          |                        |
+| Backslash      |                        |
+| Period         |                        |
+| Comma          |                        |
+| Quote          | SingleQuote            |
+| Backquote      | BackTick               |
+| Semicolon      |                        |
+| BracketLeft    |                        |
+| BracketRight   |                        |
+| Minus          |                        |
+| Equal          |                        |
+| Enter          |                        |
+| NumpadEnter    | NpEnter / REnter       |
+| Space          |                        |
+| Backspace      |                        |
+| Tab            |                        |
+| Delete         | Del                    |
+| Insert         | Ins                    |
+| Pause          |                        |
+| PrintScreen    |                        |
+| ScrollLock     |                        |
+| NumLock        |                        |
+| CapsLock       |                        |
+| ContextMenu    |                        |
+| Escape         | Esc                    |
 | F1             |                        |
 | F2             |                        |
 | F3             |                        |
@@ -274,10 +281,3 @@ Not all keys have aliases.
 | F22            |                        |
 | F23            |                        |
 | F24            |                        |
-| Pause          |                        |
-| PrintScreen    |                        |
-| ScrollLock     |                        |
-| NumLock        |                        |
-| CapsLock       |                        |
-| ContextMenu    |                        |
-| Escape         | Esc                    |
