@@ -1,7 +1,7 @@
 import {JSDOM} from 'jsdom';
 import {MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {extractLastEvent} from './utils';
-import {KeyId} from '~key-id.type';
+import {KeyId} from '../src/key-id-type';
 import {KeyName, KeyboardSimulator} from '../src';
 
 describe('Alternative Values', () => {

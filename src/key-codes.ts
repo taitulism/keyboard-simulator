@@ -1,4 +1,4 @@
-import {KeyId} from '~key-id.type';
+import {KeyId} from './key-id-type';
 
 export type ModifierID = keyof typeof ModifierNumbers
 export type TogglerButton = typeof TogglerButtons[number]

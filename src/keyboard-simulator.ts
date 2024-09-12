@@ -1,4 +1,4 @@
-import {KeyId} from '~key-id.type';
+import {KeyId} from './key-id-type';
 import {
 	type KeyName,
 	type ModifierID,
