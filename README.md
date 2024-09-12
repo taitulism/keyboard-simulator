@@ -57,14 +57,16 @@ const kbSim = new KeyboardSimulator(contextElement = document);
 The context element is the element that dispatches the following keyboard events.
 The default is `document`. Returns a `KeyboardSimulator` instance that has the following methods:
 
-* `.keyDown()`
-* `.keyUp()`
-* `.keyPress()`
-* `.keyPressAsOne()`
-* `.holdKey()`
-* `.releaseAll()`
-* `.setContextElement()`
-* `.reset()`
+* [`.keyDown()`](#keydownkeys)
+* [`.keyUp()`](#keyupkeys)
+* [`.keyPress()`](#keypresskeys)
+* [`.keyPressAsOne()`](#keypressasonekeys)
+* [`.holdKey()`](#holdkeykey-repeatcount)
+* [`.releaseAll()`](#releaseall)
+* [`.setContextElement()`](#setcontextelmhtmlelement)
+* [`.reset()`](#reset)
+
+Scroll down to see the [Key List](#keys-list)
 
 ### .keyDown(...keys)
 Dispatches one or more `keydown` events of given keys. Returns a boolean (or an array of booleans if passed in multiple keys), which is the result of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
