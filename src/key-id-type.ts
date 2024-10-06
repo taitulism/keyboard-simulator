@@ -68,6 +68,7 @@ export type KeyId =
 	| 'MetaRight'
 	| 'Slash'
 	| 'Backslash'
+	| 'IntlBackslash'
 	| 'Period'
 	| 'Comma'
 	| 'Quote'

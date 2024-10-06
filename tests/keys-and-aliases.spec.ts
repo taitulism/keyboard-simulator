@@ -4,8 +4,8 @@ import {extractLastEvents} from './utils';
 import {KeyboardSimulator, KeyAliases, KeyMap, type KeyAlias} from '../src';
 
 describe('KeyMap', () => {
-	it('has 116 Keys', () => {
-		expect(Object.entries(KeyMap)).to.have.lengthOf(116);
+	it('has 117 Keys', () => {
+		expect(Object.entries(KeyMap)).to.have.lengthOf(117);
 	});
 });
 

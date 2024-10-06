@@ -132,6 +132,7 @@ export const KeyMap = {
 	// Symbols
 	Slash: ['/', '?'],
 	Backslash: ['\\', '|'],
+	IntlBackslash: ['\\', '|'],
 	Period: ['.', '>'],
 	Comma: [',', '<'],
 	Quote: ['\'', '"'],

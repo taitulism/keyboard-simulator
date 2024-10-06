@@ -189,6 +189,7 @@ describe('Alternative Values', () => {
 			const chars = new Map<KeyId, [string, string]>([
 				['Slash', ['/', '?']],
 				['Backslash', ['\\', '|']],
+				['IntlBackslash', ['\\', '|']],
 				['Period', ['.', '>']],
 				['Comma', [',', '<']],
 				['Quote', ['\'', '"']],

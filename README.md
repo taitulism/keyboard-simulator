@@ -236,6 +236,7 @@ Not all keys have aliases.
 | MetaRight      | RMeta                  |
 | Slash          |                        |
 | Backslash      |                        |
+| IntlBackslash  |                        |
 | Period         |                        |
 | Comma          |                        |
 | Quote          | SingleQuote            |
