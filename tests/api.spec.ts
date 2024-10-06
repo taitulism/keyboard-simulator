@@ -458,5 +458,15 @@ describe('API', () => {
 
 			expect(instance).to.equal(kbSim);
 		});
+
+		it('Throws when argument is empty', () => {
+			const failFunc = () => {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-expect-error
+				kbSim.setContextElm(null);
+			};
+
+			expect(failFunc).to.throw('Context element cannot be empty');
+		});
 	});
 });

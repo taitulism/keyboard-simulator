@@ -18,7 +18,7 @@ export type KeyPressDispatchResults = [boolean, boolean]
 const isDocument = (doc: {nodeType: number}): doc is Document =>
 	doc.nodeType === Node.DOCUMENT_NODE; // 9 is document
 
-const getWindow = (elmOrDoc?: HTMLElement | Document): Window | null => {
+const getWindow = (elmOrDoc?: ContextElement): Window | null => {
 	if (!elmOrDoc) return null;
 
 	if (isDocument(elmOrDoc)) {
@@ -177,6 +177,7 @@ export class KeyboardSimulator {
 	}
 
 	public setContextElm (ctxElm: ContextElement) {
+		if (!ctxElm) throw new Error('Context element cannot be empty');
 		this.ctxElm = ctxElm;
 
 		return this;
