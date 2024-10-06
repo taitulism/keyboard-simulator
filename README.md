@@ -63,7 +63,7 @@ The default is `document`. Returns a `KeyboardSimulator` instance that has the f
 * [`.keyPressAsOne()`](#keypressasonekeys)
 * [`.holdKey()`](#holdkeykey-repeatcount)
 * [`.releaseAll()`](#releaseall)
-* [`.setContextElement()`](#setcontextelmhtmlelement)
+* [`.setContextElm()`](#setcontextelmhtmlelement)
 * [`.reset()`](#reset)
 
 Scroll down to see the [Key List](#keys-list)

@@ -15,6 +15,19 @@ export type ContextElement = HTMLElement | Document
 export type EventType = 'keydown' | 'keyup'
 export type KeyPressDispatchResults = [boolean, boolean]
 
+const isDocument = (doc: {nodeType: number}): doc is Document =>
+	doc.nodeType === Node.DOCUMENT_NODE; // 9 is document
+
+const getWindow = (elmOrDoc?: HTMLElement | Document): Window | null => {
+	if (!elmOrDoc) return null;
+
+	if (isDocument(elmOrDoc)) {
+		return elmOrDoc.defaultView;
+	}
+
+	return elmOrDoc.ownerDocument.defaultView;
+};
+
 export class KeyboardSimulator {
 	private isCtrlDown = false;
 	private isAltDown = false;
@@ -137,6 +150,12 @@ export class KeyboardSimulator {
 			shiftKey: this.isShiftDown,
 			metaKey: this.isMetaDown,
 			repeat,
+			location: 1, // todo:
+			bubbles: true,
+			cancelable: true,
+			composed: true,
+			isComposing: false, // For Emojis and other special characters
+			view: getWindow(this.ctxElm),
 		});
 	}
 

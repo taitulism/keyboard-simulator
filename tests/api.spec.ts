@@ -38,6 +38,12 @@ describe('API', () => {
 				expect(ev.code).to.equal('KeyA');
 				expect(ev.type).to.equal('keydown');
 				expect(ev.repeat).to.equal(false);
+				expect(ev.location).to.equal(1);
+				expect(ev.bubbles).to.equal(true);
+				expect(ev.cancelable).to.equal(true);
+				expect(ev.composed).to.equal(true);
+				expect(ev.isComposing).to.equal(false);
+				expect(ev.view).to.equal(doc?.defaultView);
 			});
 
 			it('Handles multiple keys', () => {
@@ -55,13 +61,13 @@ describe('API', () => {
 				expect(lastEv.type).to.equal('keydown');
 			});
 
-			it('For a single key: returns a "cancelable" boolean', () => {
+			it('For a single key: returns a "canceled" boolean', () => {
 				const single = kbSim.keyDown('A');
 
 				expect(single).to.be.a('Boolean');
 			});
 
-			it('For multiple keys: returns an array of "cancelable" booleans', () => {
+			it('For multiple keys: returns an array of "canceled" booleans', () => {
 				const multi = kbSim.keyDown('A', 'B');
 
 				expect(multi).to.be.an('Array');
@@ -121,7 +127,7 @@ describe('API', () => {
 				expect(lastEv.type).to.equal('keyup');
 			});
 
-			it('For a single key: returns a "cancelable" boolean', () => {
+			it('For a single key: returns a "canceled" boolean', () => {
 				kbSim.keyDown('A');
 
 				const single = kbSim.keyUp('A');
@@ -129,7 +135,7 @@ describe('API', () => {
 				expect(single).to.be.a('Boolean');
 			});
 
-			it('For multiple keys: returns an array of "cancelable" booleans', () => {
+			it('For multiple keys: returns an array of "canceled" booleans', () => {
 				kbSim.keyDown('A', 'B');
 
 				const multi = kbSim.keyUp('A', 'B');
@@ -200,7 +206,7 @@ describe('API', () => {
 				expect(ev4.type).to.equal('keyup');
 			});
 
-			it('For a single key: returns a tuple of two "cancelable" booleans', () => {
+			it('For a single key: returns a tuple of two "canceled" booleans', () => {
 				const single = kbSim.keyPress('A');
 
 				expect(single).to.be.an('Array');
@@ -209,7 +215,7 @@ describe('API', () => {
 				expect(single[1]).to.be.a('Boolean');
 			});
 
-			it('For multiple keys: returns an array of tuples of two "cancelable" booleans', () => {
+			it('For multiple keys: returns an array of tuples of two "canceled" booleans', () => {
 				const multi = kbSim.keyPress('A', 'B');
 
 				// multi = [[true, true], [true, true]]
@@ -249,7 +255,7 @@ describe('API', () => {
 				expect(ev4.type).to.equal('keyup');
 			});
 
-			it('Returns an array of tuples of two "cancelable" booleans', () => {
+			it('Returns an array of tuples of two "canceled" booleans', () => {
 				const multi = kbSim.keyPressAsOne(['A', 'B']);
 
 				// multi = [[true, true], [true, true]]
@@ -278,9 +284,15 @@ describe('API', () => {
 				expect(ev.code).to.equal('ControlLeft');
 				expect(ev.type).to.equal('keydown');
 				expect(ev.repeat).to.equal(true);
+				expect(ev.location).to.equal(1);
+				expect(ev.bubbles).to.equal(true);
+				expect(ev.cancelable).to.equal(true);
+				expect(ev.composed).to.equal(true);
+				expect(ev.isComposing).to.equal(false);
+				expect(ev.view).to.equal(doc?.defaultView);
 			});
 
-			it('Returns an array of "cancelable" booleans', () => {
+			it('Returns an array of "canceled" booleans', () => {
 				const events = kbSim.holdKey('A', 3);
 
 				expect(events).to.be.an('Array');
