@@ -1,10 +1,10 @@
 import {JSDOM} from 'jsdom';
-import {MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
+import {MockInstance, beforeAll, afterAll, afterEach, describe, expect, it, vi} from 'vitest';
 import {KeyboardSimulator} from '../src';
 import {extractLastEvent, extractLastEvents} from './utils';
 
 describe('Modifiers', () => {
-	let doc: Document | undefined;
+	let doc: Document;
 	let spy: MockInstance;
 	let kbSim: KeyboardSimulator;
 
@@ -12,13 +12,13 @@ describe('Modifiers', () => {
 		const dom = new JSDOM('', {url: 'http://localhost'});
 
 		doc = dom.window.document;
-		spy = vi.spyOn(doc, 'dispatchEvent');
+		spy = vi.spyOn(dom.window.HTMLElement.prototype, 'dispatchEvent');
 		kbSim = new KeyboardSimulator(doc);
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
 		kbSim.reset();
-		spy.mockReset();
+		spy.mockClear();
 	});
 
 	afterAll(() => {

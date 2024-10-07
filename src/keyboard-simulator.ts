@@ -15,18 +15,11 @@ export type ContextElement = HTMLElement | Document
 export type EventType = 'keydown' | 'keyup'
 export type KeyPressDispatchResults = [boolean, boolean]
 
-const isDocument = (doc: {nodeType: number}): doc is Document =>
-	doc.nodeType === Node.DOCUMENT_NODE; // 9 is document
+const isDocument = (doc: object): doc is Document =>
+	'nodeType' in doc && doc.nodeType === 9; // Node.DOCUMENT_NODE = 9
+	// doc.constructor.name === 'HTMLDocument'; // fails in JSDOM ('Document')
 
-const getWindow = (elmOrDoc?: ContextElement): Window | null => {
-	if (!elmOrDoc) return null;
-
-	if (isDocument(elmOrDoc)) {
-		return elmOrDoc.defaultView;
-	}
-
-	return elmOrDoc.ownerDocument.defaultView;
-};
+export type Maybe<T> = T | undefined
 
 export class KeyboardSimulator {
 	private isCtrlDown = false;
@@ -38,7 +31,34 @@ export class KeyboardSimulator {
 	private isNumLockOn = true;
 	private heldKeys = new Set<KeyName>();
 
-	constructor (public ctxElm: ContextElement = document) {}
+	private _ctxElm: Maybe<ContextElement>;
+	public doc: Document;
+
+	constructor (ctxElm?: ContextElement) {
+		if (!ctxElm) {
+			this.doc = document;
+		}
+		else if (isDocument(ctxElm)) {
+			this.doc = ctxElm;
+		}
+		else { // is HTMLElement
+			this.doc = ctxElm.ownerDocument;
+			this._ctxElm = ctxElm;
+		}
+	}
+
+	public get ctxElm (): ContextElement {
+		if (this._ctxElm) return this._ctxElm;
+		if (this.doc.activeElement) return this.doc.activeElement as HTMLElement;
+
+		return this.doc;
+	}
+
+	public setContextElm (ctxElm?: Maybe<ContextElement>) {
+		this._ctxElm = ctxElm;
+
+		return this;
+	}
 
 	private followKey (key: KeyId) {
 		if (this.heldKeys.has(key)) throw new Error(`The key "${key}" is already pressed down.`);
@@ -59,6 +79,7 @@ export class KeyboardSimulator {
 		this.isNumLockOn = true;
 		this.isScrollLockOn = false;
 		this.heldKeys.clear();
+		this._ctxElm = undefined;
 	}
 
 	private toggleModifier (keyId: ModifierID, isPressed: boolean = false) {
@@ -137,10 +158,13 @@ export class KeyboardSimulator {
 		repeat: boolean = false,
 	) {
 		const keyId = getKeyId(keyName);
-		const isAlternativeValue = isAffectedByNumLock(keyId) && this.isNumLockOn
+		const isAlternativeValue = this.isNumLockOn && isAffectedByNumLock(keyId)
 			|| this.isShiftDown
 			|| this.isCapsLockOn;
 		const keyValue = getKeyValue(keyId, isAlternativeValue);
+
+		// TODO:!
+		// eventType === 'keydown' && console.log('isAlternativeValue', keyId, isAlternativeValue, keyValue);
 
 		return new KeyboardEvent(eventType, {
 			code: keyId,
@@ -155,7 +179,7 @@ export class KeyboardSimulator {
 			cancelable: true,
 			composed: true,
 			isComposing: false, // For Emojis and other special characters
-			view: getWindow(this.ctxElm),
+			view: this.doc.defaultView,
 		});
 	}
 
@@ -174,13 +198,6 @@ export class KeyboardSimulator {
 		}
 
 		return dispatches;
-	}
-
-	public setContextElm (ctxElm: ContextElement) {
-		if (!ctxElm) throw new Error('Context element cannot be empty');
-		this.ctxElm = ctxElm;
-
-		return this;
 	}
 
 	public releaseAll () {

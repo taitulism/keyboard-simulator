@@ -22,7 +22,7 @@ describe('Case InSeNsiTiViTy', () => {
 		const dom = new JSDOM('', {url: 'http://localhost'});
 
 		const doc = dom.window.document;
-		const spy = vi.spyOn(doc, 'dispatchEvent');
+		const spy = vi.spyOn(dom.window.HTMLElement.prototype, 'dispatchEvent');
 		const kbSim = new KeyboardSimulator(doc);
 
 		kbSim.keyDown('control', 'a', 'pgdn');

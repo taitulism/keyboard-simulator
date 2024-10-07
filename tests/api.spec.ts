@@ -1,28 +1,107 @@
 import {JSDOM, DOMWindow} from 'jsdom';
-import {MockInstance, afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
+import {MockInstance, beforeAll, beforeEach, afterAll, afterEach, describe, expect, it, vi} from 'vitest';
 import {KeyboardSimulator} from '../src';
 import {extractLastEvent, extractLastEvents} from './utils';
 
 describe('API', () => {
-	let doc: Document | undefined;
+	let win: DOMWindow;
+	let doc: Document;
 	let spy: MockInstance;
 	let kbSim: KeyboardSimulator;
 
 	beforeAll(() => {
 		const dom = new JSDOM('', {url: 'http://localhost'});
 
+		win = dom.window;
 		doc = dom.window.document;
-		spy = vi.spyOn(doc, 'dispatchEvent');
+		spy = vi.spyOn(dom.window.HTMLElement.prototype, 'dispatchEvent');
 		kbSim = new KeyboardSimulator(doc);
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
 		kbSim.reset();
 		spy.mockClear();
 	});
 
 	afterAll(() => {
 		spy.mockRestore();
+	});
+
+	describe('Constructor', () => {
+		it('When no args - context element is `document.activeElement` (Body by default)', () => {
+			const originalDoc = globalThis.document;
+
+			// Because in this case KeyboardSimulator grabs the `document` from the global scope
+			globalThis.document = doc;
+
+			const kbSim = new KeyboardSimulator();
+
+			kbSim.keyPress('A');
+
+			const {target: evTarget1} = extractLastEvent(spy);
+
+			expect(evTarget1).to.be.instanceOf(win.HTMLBodyElement);
+			expect(evTarget1).to.equal(doc.body);
+
+			const input = doc.createElement('input');
+
+			doc.body.appendChild(input);
+			input.focus();
+			kbSim.keyPress('A');
+
+			const {target: evTarget2} = extractLastEvent(spy);
+
+			expect(evTarget2).to.be.instanceOf(win.HTMLInputElement);
+			expect(evTarget2).to.equal(input);
+
+			input.remove();
+			globalThis.document = originalDoc;
+		});
+
+		it('When arg is a Document - context element is `document.activeElement` (Body by default)', () => {
+			// Default test instance
+			kbSim.keyPress('A');
+
+			const {target: evTarget1} = extractLastEvent(spy);
+
+			expect(evTarget1).to.be.instanceOf(win.HTMLBodyElement);
+			expect(evTarget1).to.equal(doc.body);
+
+			const input = doc.createElement('input');
+
+			doc.body.appendChild(input);
+			input.focus();
+			kbSim.keyPress('A');
+
+			const {target: evTarget2} = extractLastEvent(spy);
+
+			expect(evTarget2).to.be.instanceOf(win.HTMLInputElement);
+			expect(evTarget2).to.equal(input);
+
+			input.remove();
+		});
+
+		it('When arg is an HTMLElement - context element is that element', () => {
+			const input1 = doc.createElement('input');
+			const input2 = doc.createElement('input');
+
+			doc.body.appendChild(input1);
+			doc.body.appendChild(input2);
+
+			const kbSim2 = new KeyboardSimulator(input2); // <-- 2
+
+			input1.focus(); // <-- 1
+
+			kbSim2.keyPress('A');
+
+			const {target: evTarget} = extractLastEvent(spy);
+
+			expect(evTarget).to.be.instanceOf(win.HTMLInputElement);
+			expect(evTarget).to.equal(input2); // <-- 2
+
+			input1.remove();
+			input2.remove();
+		});
 	});
 
 	describe('Dispatching', () => {
@@ -412,15 +491,58 @@ describe('API', () => {
 			kbSim.releaseAll();
 			expect(spy).toHaveBeenCalledTimes(3);
 		});
+
+		it.skip('Resets toggler buttons', () => {
+			kbSim.keyPress('A');
+			kbSim.keyPress('Np2');
+
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const [letterEventBefore, _1, numberEventBefore, _2] = extractLastEvents(spy, 4);
+
+			expect(letterEventBefore.key).to.equal('a');
+			expect(numberEventBefore.key).to.equal('2');
+
+			kbSim.keyPress('NumLock'); // On -> Off
+			kbSim.keyPress('CapsLock'); // Off -> On
+
+			kbSim.keyPress('A');
+			kbSim.keyPress('Np2');
+
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const [letterEventAfter, _3, numberEventAfter, _4] = extractLastEvents(spy, 4);
+
+			expect(letterEventAfter.key).to.equal('A');
+			expect(numberEventAfter.key).to.equal('ArrowDown');
+
+			kbSim.reset();
+
+			kbSim.keyPress('A');
+			kbSim.keyPress('Np2');
+
+			expect(letterEventBefore.key).to.equal('a');
+			expect(numberEventBefore.key).to.equal('2');
+		});
+
+		it('Resets context element', () => {
+			expect(kbSim.ctxElm).to.equal(doc.body);
+
+			const input = doc.createElement('input');
+
+			doc.body.appendChild(input);
+			kbSim.setContextElm(input);
+			expect(kbSim.ctxElm).to.equal(input);
+
+			kbSim.reset();
+			expect(kbSim.ctxElm).to.equal(doc.body);
+		});
 	});
 
-	describe('.setContextElm()', () => {
-		let win: DOMWindow | undefined;
-		let doc: Document | undefined;
+	describe('Context Element', () => {
+		let win: DOMWindow;
+		let doc: Document;
 		let input: HTMLInputElement;
 		let kbSim: KeyboardSimulator;
-		let docDispatchSpy: MockInstance;
-		let inputDispatchSpy: MockInstance;
+		let spy: MockInstance;
 
 		beforeAll(() => {
 			const dom = new JSDOM('<input id="input" type="text" />', {url: 'http://localhost'});
@@ -432,41 +554,81 @@ describe('API', () => {
 		});
 
 		beforeEach(() => {
-			docDispatchSpy = vi.spyOn(doc!, 'dispatchEvent');
-			inputDispatchSpy = vi.spyOn(input, 'dispatchEvent');
+			spy = vi.spyOn(win.HTMLElement.prototype, 'dispatchEvent');
 		});
 
 		afterEach(() => {
-			docDispatchSpy.mockRestore();
-			inputDispatchSpy.mockRestore();
+			kbSim.reset();
+			spy.mockClear();
 		});
 
-		it('Changes the element that gets the keyboard events', () => {
-			kbSim.keyPress('A');
-			kbSim.setContextElm(input);
-			kbSim.keyPress('B');
-
-			const evBefore = extractLastEvent(docDispatchSpy);
-			const evAfter = extractLastEvent(inputDispatchSpy);
-
-			expect(evBefore.target).to.equal(doc);
-			expect(evAfter.target).to.be.instanceOf(win!.HTMLInputElement);
+		afterAll(() => {
+			spy.mockRestore();
 		});
 
-		it('Returns the instance', () => {
-			const instance = kbSim.setContextElm(input);
+		describe('.setContextElm()', () => {
+			it('Changes the element that gets the keyboard events', () => {
+				kbSim.keyPress('A');
+				kbSim.setContextElm(input);
+				kbSim.keyPress('B');
 
-			expect(instance).to.equal(kbSim);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const [evBefore, _1, evAfter, _2] = extractLastEvents(spy, 4);
+
+				expect(evBefore.target).to.equal(doc!.body);
+				expect(evAfter.target).to.be.instanceOf(win!.HTMLInputElement);
+			});
+
+			it('Returns the instance', () => {
+				const instance = kbSim.setContextElm(input);
+
+				expect(instance).to.equal(kbSim);
+			});
 		});
 
-		it('Throws when argument is empty', () => {
-			const failFunc = () => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-expect-error
-				kbSim.setContextElm(null);
-			};
+		describe('Getter: .ctxElm()', () => {
+			it('Returns Body by default', () => {
+				expect(kbSim.ctxElm).to.equal(doc.body);
+			});
 
-			expect(failFunc).to.throw('Context element cannot be empty');
+			it('Returns a given HTML element when explicitly set with `.setContextElm()`', () => {
+				expect(kbSim.ctxElm).to.equal(doc.body);
+				kbSim.setContextElm(input);
+				expect(kbSim.ctxElm).to.equal(input);
+			});
+
+			it('Returns `document.activeElement` (focus)', () => {
+				expect(kbSim.ctxElm).to.equal(doc.body);
+				input.focus();
+				expect(kbSim.ctxElm).to.equal(input);
+				input.blur();
+				expect(kbSim.ctxElm).to.equal(doc.body);
+			});
+
+			it('Explicit `.setContextElm()` overtakes `document.activeElement`', () => {
+				expect(kbSim.ctxElm).to.equal(doc.body);
+				input.focus();
+				expect(kbSim.ctxElm).to.equal(input);
+				input.blur();
+				expect(kbSim.ctxElm).to.equal(doc.body);
+				kbSim.setContextElm(doc);
+				input.focus();
+				expect(kbSim.ctxElm).to.equal(doc);
+
+				input.blur();
+				kbSim.setContextElm(doc.body);
+			});
+
+			it('Returns `document` if no active element', () => {
+				const {body} = doc; // Because .remove() leaves doc.body = null
+
+				expect(kbSim.ctxElm).to.equal(doc.body);
+				doc.body.remove();
+				expect(kbSim.ctxElm).to.equal(doc);
+
+				doc.documentElement.appendChild(body);
+				kbSim.setContextElm(body);
+			});
 		});
 	});
 });
