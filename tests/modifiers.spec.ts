@@ -28,9 +28,9 @@ describe('Modifiers', () => {
 	describe('Modifiers', () => {
 		describe('Ctrl', () => {
 			it('.keyDown(Ctrl)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyDown('Ctrl');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 
 				const ev = extractLastEvent(spy);
 
@@ -44,9 +44,9 @@ describe('Modifiers', () => {
 
 			it('.keyUp(Ctrl)', () => {
 				kbSim.keyDown('Ctrl');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 				kbSim.keyUp('Ctrl');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -59,9 +59,9 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyPress(Ctrl)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyPress('Ctrl');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
@@ -76,9 +76,9 @@ describe('Modifiers', () => {
 
 		describe('Alt', () => {
 			it('.keyDown(Alt)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyDown('Alt');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 
 				const ev = extractLastEvent(spy);
 
@@ -92,9 +92,9 @@ describe('Modifiers', () => {
 
 			it('.keyUp(Alt)', () => {
 				kbSim.keyDown('Alt');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 				kbSim.keyUp('Alt');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -107,9 +107,9 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyPress(Alt)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyPress('Alt');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
@@ -124,9 +124,9 @@ describe('Modifiers', () => {
 
 		describe('Shift', () => {
 			it('.keyDown(Shift)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyDown('Shift');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 
 				const ev = extractLastEvent(spy);
 
@@ -140,9 +140,9 @@ describe('Modifiers', () => {
 
 			it('.keyUp(Shift)', () => {
 				kbSim.keyDown('Shift');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 				kbSim.keyUp('Shift');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -155,9 +155,9 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyPress(Shift)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyPress('Shift');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
@@ -172,9 +172,9 @@ describe('Modifiers', () => {
 
 		describe('Meta', () => {
 			it('.keyDown(Meta)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyDown('Meta');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 
 				const ev = extractLastEvent(spy);
 
@@ -188,9 +188,9 @@ describe('Modifiers', () => {
 
 			it('.keyUp(Meta)', () => {
 				kbSim.keyDown('Meta');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 				kbSim.keyUp('Meta');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -203,9 +203,9 @@ describe('Modifiers', () => {
 			});
 
 			it('.keyPress(Meta)', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyPress('Meta');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 

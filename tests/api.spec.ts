@@ -28,9 +28,9 @@ describe('API', () => {
 	describe('Dispatching', () => {
 		describe('.keyDown()', () => {
 			it('Dispatches "keydown" event', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyDown('A');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 
 				const ev = extractLastEvent(spy);
 
@@ -48,7 +48,7 @@ describe('API', () => {
 
 			it('Handles multiple keys', () => {
 				kbSim.keyDown('Ctrl', 'A');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
@@ -99,9 +99,9 @@ describe('API', () => {
 		describe('.keyUp()', () => {
 			it('Dispatches "keyup" event', () => {
 				kbSim.keyDown('A');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 				kbSim.keyUp('A');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -112,9 +112,9 @@ describe('API', () => {
 
 			it('Handles multiple keys', () => {
 				kbSim.keyDown('Ctrl', 'A');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 				kbSim.keyUp('Ctrl', 'A');
-				expect(spy.mock.calls.length).to.equal(4);
+				expect(spy).toHaveBeenCalledTimes(4);
 
 				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
@@ -169,9 +169,9 @@ describe('API', () => {
 
 		describe('.keyPress()', () => {
 			it('Dispatches "keydown" & "keyup" events', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyPress('A');
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const [secondLastEv, lastEv] = extractLastEvents(spy, 2);
 
@@ -234,9 +234,9 @@ describe('API', () => {
 
 		describe('.keyPressAsOne()', () => {
 			it('Handles multiple keys combination', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.keyPressAsOne(['Ctrl', 'A']);
-				expect(spy.mock.calls.length).to.equal(4);
+				expect(spy).toHaveBeenCalledTimes(4);
 
 				const [ev1, ev2, ev3, ev4] = extractLastEvents(spy, 4);
 
@@ -274,9 +274,9 @@ describe('API', () => {
 
 		describe('.holdKey()', () => {
 			it('Dispatches multiple "keydown" events with `repeat: true`', () => {
-				expect(spy.mock.calls.length).to.equal(0);
+				expect(spy).not.toHaveBeenCalled();
 				kbSim.holdKey('Ctrl', 3);
-				expect(spy.mock.calls.length).to.equal(3);
+				expect(spy).toHaveBeenCalledTimes(3);
 
 				const ev = extractLastEvent(spy);
 
@@ -315,10 +315,10 @@ describe('API', () => {
 		describe('.releaseAll()', () => {
 			it('Dispatches "keyup" event', () => {
 				kbSim.keyDown('A');
-				expect(spy.mock.calls.length).to.equal(1);
+				expect(spy).toHaveBeenCalledOnce();
 
 				kbSim.releaseAll();
-				expect(spy.mock.calls.length).to.equal(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				const ev = extractLastEvent(spy);
 
@@ -329,10 +329,10 @@ describe('API', () => {
 
 			it('Releases all held keys in reverse order', () => {
 				kbSim.keyDown('A', 'B', 'C');
-				expect(spy.mock.calls.length).to.equal(3);
+				expect(spy).toHaveBeenCalledTimes(3);
 
 				kbSim.releaseAll();
-				expect(spy.mock.calls.length).to.equal(6);
+				expect(spy).toHaveBeenCalledTimes(6);
 
 				const ev = extractLastEvent(spy);
 
@@ -400,17 +400,17 @@ describe('API', () => {
 
 		it('Resets held keys', () => {
 			kbSim.keyDown('A', 'B', 'C');
-			expect(spy.mock.calls.length).to.equal(3);
+			expect(spy).toHaveBeenCalledTimes(3);
 			kbSim.releaseAll();
-			expect(spy.mock.calls.length).to.equal(6);
+			expect(spy).toHaveBeenCalledTimes(6);
 
 			spy.mockReset();
 
 			kbSim.keyDown('A', 'B', 'C');
-			expect(spy.mock.calls.length).to.equal(3);
+			expect(spy).toHaveBeenCalledTimes(3);
 			kbSim.reset();
 			kbSim.releaseAll();
-			expect(spy.mock.calls.length).to.equal(3);
+			expect(spy).toHaveBeenCalledTimes(3);
 		});
 	});
 
