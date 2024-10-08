@@ -63,7 +63,7 @@ Returns a `KeyboardSimulator` instance that has the following methods:
 * [`.keyPress()`](#keypresskeys)
 * [`.combine()`](#combinekeys)
 * [`.holdKey()`](#holdkeykey-repeatcount)
-* [`.releaseAll()`](#releaseall)
+* [`.release()`](#release)
 * [`.setContextElm()`](#setcontextelmhtmlelement)
 * [`.reset()`](#reset)
 
@@ -137,13 +137,18 @@ kbSim.keyDown('A', 'B', 'C');
 kbSim.holdKey('C', 3);
 ```
 
-### .releaseAll()
-Dispatches `keyup` events for all the keys that are pressed down in a reversed order of which they were pressed down (first down = last to be released).  
+### .release()
+Dispatches `keyup` events for all the keys that are pressed down in the reverse order in which they were pressed (the first key down is the last to be released).  
 Return the same results as [`.keyUp()`](#keyupkeys)
+
+> NOTE: Can also be used as a `.keyUp()` alias.
 
 ```js
 kbSim.keyDown('A', 'B', 'C');
-kbSim.releaseAll(); // keyup C, B, A
+
+kbSim.release(); // keyup C, B, A
+// or:
+kbSim.release('C', 'B', 'A');
 ```
 
 ### .setContextElm(HTMLElement)

@@ -317,33 +317,76 @@ describe('Dispatching', () => {
 		});
 	});
 
-	describe('.releaseAll()', () => {
-		it('Dispatches "keyup" event', () => {
-			kbSim.keyDown('A');
-			expect(spy).toHaveBeenCalledOnce();
+	describe('.release()', () => {
+		it('Dispatches "keyup" events for all held down keys', () => {
+			kbSim.keyDown('A', 'B', 'C');
+			expect(spy).toHaveBeenCalledTimes(3);
+			kbSim.release();
+			expect(spy).toHaveBeenCalledTimes(6);
 
-			kbSim.releaseAll();
-			expect(spy).toHaveBeenCalledTimes(2);
+			const events = extractLastEvents(spy, 3);
 
-			const ev = extractLastEvent(spy);
-
-			expect(ev.key).to.equal('a');
-			expect(ev.code).to.equal('KeyA');
-			expect(ev.type).to.equal('keyup');
+			expect(events[0].type).to.equal('keyup');
+			expect(events[1].type).to.equal('keyup');
+			expect(events[2].type).to.equal('keyup');
 		});
 
-		it('Releases all held keys in reverse order', () => {
+		it('For an explicit single key: returns a "canceled" boolean', () => {
+			kbSim.keyDown('A');
+
+			const single = kbSim.release('A');
+
+			expect(single).to.be.a('Boolean');
+		});
+
+		it('For explicit multiple keys: returns an array of "canceled" booleans', () => {
+			kbSim.keyDown('A', 'B');
+
+			const multi = kbSim.release('B', 'A');
+
+			expect(multi).to.be.an('Array');
+			expect(multi).to.have.lengthOf(2);
+			expect(multi[0]).to.be.a('Boolean');
+			expect(multi[1]).to.be.a('Boolean');
+		});
+
+		it('For an implicit single key: returns a "canceled" boolean', () => {
+			kbSim.keyDown('A');
+
+			const single = kbSim.release();
+
+			expect(single).to.be.a('Boolean');
+		});
+
+		it('For implicit multiple keys: returns an array of "canceled" booleans', () => {
+			kbSim.keyDown('A', 'B');
+
+			const multi = kbSim.release();
+
+			expect(multi).to.be.an('Array');
+			expect(multi).to.have.lengthOf(2);
+			expect(multi[0]).to.be.a('Boolean');
+			expect(multi[1]).to.be.a('Boolean');
+		});
+
+		it('Releases held keys in reverse order', () => {
 			kbSim.keyDown('A', 'B', 'C');
 			expect(spy).toHaveBeenCalledTimes(3);
 
-			kbSim.releaseAll();
+			let events = extractLastEvents(spy, 3);
+
+			expect(events[0].code).to.equal('KeyA'); // <-- A
+			expect(events[1].code).to.equal('KeyB');
+			expect(events[2].code).to.equal('KeyC');
+
+			kbSim.release();
 			expect(spy).toHaveBeenCalledTimes(6);
 
-			const ev = extractLastEvent(spy);
+			events = extractLastEvents(spy, 3);
 
-			expect(ev.key).to.equal('a');
-			expect(ev.code).to.equal('KeyA');
-			expect(ev.type).to.equal('keyup');
+			expect(events[0].code).to.equal('KeyC');
+			expect(events[1].code).to.equal('KeyB');
+			expect(events[2].code).to.equal('KeyA'); // <-- A
 		});
 
 		it('Releases Modifiers', () => {
@@ -365,7 +408,7 @@ describe('Dispatching', () => {
 			expect(ev2.key).to.equal('a');
 			expect(ev2.ctrlKey).toBe(true); // <--
 
-			kbSim.releaseAll(); // Should release `Ctrl`
+			kbSim.release(); // Should release `Ctrl`
 
 			// Without `Ctrl`
 			kbSim.keyDown('A');

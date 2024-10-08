@@ -198,13 +198,20 @@ export class KeyboardSimulator {
 		return dispatches;
 	}
 
-	public releaseAll () {
+	public release (): ReturnType<typeof KeyboardSimulator.prototype.keyUp>
+	public release (key: KeyName): boolean;
+	public release (...keys: Array<KeyName>): Array<boolean>;
+	public release (...keys: Array<KeyName>) {
+		if (keys.length) {
+			return this.keyUp(...keys);
+		}
+
 		const dispatches = Array.from(this.heldKeys)
 			.reverse()
 			.map((key) => this.keyUp(key));
 
 		this.heldKeys.clear();
 
-		return dispatches;
+		return (dispatches.length === 1) ? dispatches[0] : dispatches;
 	}
 }

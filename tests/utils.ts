@@ -16,7 +16,10 @@ export const extractLastEvent = (spy: MockInstance): KeyboardEvent => {
 	return lastCall![0];
 };
 
-export const extractLastEvents = (spy: MockInstance, count: number): Array<KeyboardEvent> | never => {
+export const extractLastEvents = (
+	spy: MockInstance,
+	count: number,
+): Array<KeyboardEvent> | never => {
 	const {calls} = spy.mock;
 
 	expect(calls.length).toBeGreaterThanOrEqual(count);

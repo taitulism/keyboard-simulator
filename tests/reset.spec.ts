@@ -52,7 +52,7 @@ describe('.reset()', () => {
 	it('Resets held keys', () => {
 		kbSim.keyDown('A', 'B', 'C');
 		expect(spy).toHaveBeenCalledTimes(3);
-		kbSim.releaseAll();
+		kbSim.release();
 		expect(spy).toHaveBeenCalledTimes(6);
 
 		spy.mockReset();
@@ -60,7 +60,7 @@ describe('.reset()', () => {
 		kbSim.keyDown('A', 'B', 'C');
 		expect(spy).toHaveBeenCalledTimes(3);
 		kbSim.reset();
-		kbSim.releaseAll();
+		kbSim.release();
 		expect(spy).toHaveBeenCalledTimes(3);
 	});
 

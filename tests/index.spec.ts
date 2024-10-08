@@ -43,9 +43,9 @@ describe('KeyboardSimulator', () => {
 			expect(kbSim.setContextElm).to.be.a('function');
 		});
 
-		it('.releaseAll()', () => {
-			expect(kbSim).toHaveProperty('releaseAll');
-			expect(kbSim.releaseAll).to.be.a('function');
+		it('.release()', () => {
+			expect(kbSim).toHaveProperty('release');
+			expect(kbSim.release).to.be.a('function');
 		});
 
 		it('.reset()', () => {
