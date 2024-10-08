@@ -38,6 +38,11 @@ describe('KeyboardSimulator', () => {
 			expect(kbSim.repeat).to.be.a('function');
 		});
 
+		it('.createKeyboardEvent()', () => {
+			expect(kbSim).toHaveProperty('createKeyboardEvent');
+			expect(kbSim.createKeyboardEvent).to.be.a('function');
+		});
+
 		it('.setContextElm()', () => {
 			expect(kbSim).toHaveProperty('setContextElm');
 			expect(kbSim.setContextElm).to.be.a('function');

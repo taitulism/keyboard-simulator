@@ -152,33 +152,35 @@ export class KeyboardSimulator {
 		return [dispatchDownResults, dispatchUpResults];
 	}
 
-	private createKeyboardEvent (
+	public createKeyboardEvent (
 		eventType: EventType,
 		keyName: KeyName,
-		repeat: boolean = false,
+		eventInit: KeyboardEventInit = {},
 	) {
 		const keyId = getKeyId(keyName);
 		const isAlternativeValue = this.isNumLockOn && isAffectedByNumLock(keyId)
 			|| this.isShiftDown && isAffectedByShift(keyId)
 			|| this.isCapsLockOn && isAffectedByCapsLock(keyId);
-
 		const keyValue = getKeyValue(keyId, isAlternativeValue);
-
-		return new KeyboardEvent(eventType, {
+		const initialObj: KeyboardEventInit = {
 			code: keyId,
 			key: keyValue,
 			ctrlKey: this.isCtrlDown,
 			altKey: this.isAltDown,
 			shiftKey: this.isShiftDown,
 			metaKey: this.isMetaDown,
-			repeat,
-			location: 1, // todo:
+			repeat: false,
+			location: 1, // TODO:
 			bubbles: true,
 			cancelable: true,
-			composed: true,
+			composed: true, // event will propagate across the shadow DOM boundary into the standard DOM
 			isComposing: false, // For Emojis and other special characters
 			view: this.doc.defaultView,
-		});
+		};
+
+		const eventObj = Object.assign(initialObj, eventInit);
+
+		return new KeyboardEvent(eventType, eventObj);
 	}
 
 	public repeat (count: number) {
@@ -188,7 +190,7 @@ export class KeyboardSimulator {
 		const dispatches = [];
 
 		for (let i = 0; i < count; i++) {
-			const keyDownEvent = this.createKeyboardEvent('keydown', lastKey, true);
+			const keyDownEvent = this.createKeyboardEvent('keydown', lastKey, {repeat: true});
 
 			dispatches.push(this.ctxElm.dispatchEvent(keyDownEvent));
 		}

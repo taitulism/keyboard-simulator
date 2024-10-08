@@ -65,6 +65,7 @@ Returns a `KeyboardSimulator` instance that has the following methods:
 * [`.repeat()`](#repeatcount)
 * [`.release()`](#release)
 * [`.setContextElm()`](#setcontextelmhtmlelement)
+* [`.createKeyboardEvent()`](#createKeyboardEvent)
 * [`.reset()`](#reset)
 
 Scroll down to see the [Key List](#keys-list)
@@ -160,6 +161,38 @@ const kbSim = new KeyboardSimulator(); // `document` is the default
 kbSim.keyPress('A'); // document.dispatchEvent()
 kbSim.setContextElm(myDiv);
 kbSim.keyPress('A'); // myDiv.dispatchEvent()
+```
+
+### .createKeyboardEvent(eventType, keyName, eventOpts)
+* **eventType** - `'keydown'` | `'keyup'`
+* **keyName** - A key ID or alias (see [Key List](#keys-list) below)
+* **eventOpts** - Optional. `KeyboardEventInit` type. See defaults below or read more on [MDN KeyboardEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/KeyboardEvent#parameters).
+
+If, for any reason, KeyboardSimulator methods don't support your need, you can create and dispatch your own keyboard event.
+
+`eventOpts` defaults are:
+```js
+	{
+		code: ?,       // Resolved from `keyName` argument
+		key: ?,        // Resolved from `keyName` argument
+		ctrlKey: ?,    // According to the state of the instance
+		altKey: ?,     // According to the state of the instance
+		shiftKey: ?,   // According to the state of the instance
+		metaKey: ?,    // According to the state of the instance
+		view: Window,  // Resolved from the context element or from the environment
+		repeat: false,
+		location: 1,
+		bubbles: true,
+		cancelable: true,
+		composed: true,
+		isComposing: false,
+	}
+```
+
+```js
+const kbEvent = kbSim.createKeyboardEvent('keydown', 'A', {bubbles: false});
+
+kbSim.ctxElm.dispatchEvent(kbEvent);
 ```
 
 ### .reset()
