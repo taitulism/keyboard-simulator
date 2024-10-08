@@ -116,7 +116,7 @@ describe('Context Element', () => {
 
 		win = dom.window;
 		doc = dom.window.document;
-		input = doc!.getElementById('input') as HTMLInputElement;
+		input = doc.getElementById('input') as HTMLInputElement;
 		kbSim = new KeyboardSimulator(doc);
 	});
 
@@ -142,8 +142,8 @@ describe('Context Element', () => {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const [evBefore, _1, evAfter, _2] = extractLastEvents(spy, 4);
 
-			expect(evBefore.target).to.equal(doc!.body);
-			expect(evAfter.target).to.be.instanceOf(win!.HTMLInputElement);
+			expect(evBefore.target).to.equal(doc.body);
+			expect(evAfter.target).to.be.instanceOf(win.HTMLInputElement);
 		});
 
 		it('Returns the instance', () => {
