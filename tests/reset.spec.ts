@@ -64,35 +64,35 @@ describe('.reset()', () => {
 		expect(spy).toHaveBeenCalledTimes(3);
 	});
 
-	it.skip('Resets toggler buttons', () => {
+	it('Resets toggler buttons', () => {
 		kbSim.keyPress('A');
-		kbSim.keyPress('Np2');
+		kbSim.keyPress('Np1');
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [letterEventBefore, _1, numberEventBefore, _2] = extractLastEvents(spy, 4);
 
 		expect(letterEventBefore.key).to.equal('a');
-		expect(numberEventBefore.key).to.equal('2');
+		expect(numberEventBefore.key).to.equal('1');
 
-		kbSim.keyPress('NumLock'); // On -> Off
-		kbSim.keyPress('CapsLock'); // Off -> On
+		kbSim.keyPress('NumLock'); // --> Off
+		kbSim.keyPress('CapsLock'); // --> On
 
 		kbSim.keyPress('A');
-		kbSim.keyPress('Np2');
+		kbSim.keyPress('Np1');
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [letterEventAfter, _3, numberEventAfter, _4] = extractLastEvents(spy, 4);
 
 		expect(letterEventAfter.key).to.equal('A');
-		expect(numberEventAfter.key).to.equal('ArrowDown');
+		expect(numberEventAfter.key).to.equal('End');
 
 		kbSim.reset();
 
 		kbSim.keyPress('A');
-		kbSim.keyPress('Np2');
+		kbSim.keyPress('Np1');
 
 		expect(letterEventBefore.key).to.equal('a');
-		expect(numberEventBefore.key).to.equal('2');
+		expect(numberEventBefore.key).to.equal('1');
 	});
 
 	it('Resets context element', () => {

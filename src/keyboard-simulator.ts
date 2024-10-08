@@ -9,6 +9,8 @@ import {
 	isTogglerBtn,
 	TogglerButton,
 	isAffectedByNumLock,
+	isAffectedByCapsLock,
+	isAffectedByShift,
 } from './key-codes';
 
 export type ContextElement = HTMLElement | Document
@@ -159,12 +161,10 @@ export class KeyboardSimulator {
 	) {
 		const keyId = getKeyId(keyName);
 		const isAlternativeValue = this.isNumLockOn && isAffectedByNumLock(keyId)
-			|| this.isShiftDown
-			|| this.isCapsLockOn;
-		const keyValue = getKeyValue(keyId, isAlternativeValue);
+			|| this.isShiftDown && isAffectedByShift(keyId)
+			|| this.isCapsLockOn && isAffectedByCapsLock(keyId);
 
-		// TODO:!
-		// eventType === 'keydown' && console.log('isAlternativeValue', keyId, isAlternativeValue, keyValue);
+		const keyValue = getKeyValue(keyId, isAlternativeValue);
 
 		return new KeyboardEvent(eventType, {
 			code: keyId,

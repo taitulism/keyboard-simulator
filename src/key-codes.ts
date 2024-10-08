@@ -15,6 +15,9 @@ export const isTogglerBtn = (str: string): str is TogglerButton =>
 	TogglerButtons.includes(str as TogglerButton);
 
 export const isAffectedByNumLock = (keyId: KeyId) => /Numpad\d/.test(keyId) || keyId.endsWith('Decimal');
+export const isAffectedByCapsLock = (keyId: KeyId) => keyId in LettersKeyMap;
+export const isAffectedByShift = (keyId: KeyId) =>
+	keyId in LettersKeyMap || keyId in NumbersKeyMap || keyId in SymbolsKeyMap;
 
 export const getKeyId = (keyName: KeyName): KeyId => {
 	if (isKeyId(keyName)) return keyName;
@@ -51,8 +54,22 @@ export const ModifierNumbers = {
 	MetaRight: 4,
 } as const;
 
-export const KeyMap = {
-	// Letters
+const SymbolsKeyMap = {
+	Slash: ['/', '?'],
+	Backslash: ['\\', '|'],
+	IntlBackslash: ['\\', '|'],
+	Period: ['.', '>'],
+	Comma: [',', '<'],
+	Quote: ['\'', '"'],
+	Backquote: ['`', '~'],
+	Semicolon: [';', ':'],
+	BracketLeft: ['[', '{'],
+	BracketRight: [']', '}'],
+	Minus: ['-', '_'],
+	Equal: ['=', '+'],
+} as const;
+
+const LettersKeyMap = {
 	KeyA: ['a', 'A'],
 	KeyB: ['b', 'B'],
 	KeyC: ['c', 'C'],
@@ -79,8 +96,9 @@ export const KeyMap = {
 	KeyX: ['x', 'X'],
 	KeyY: ['y', 'Y'],
 	KeyZ: ['z', 'Z'],
+} as const;
 
-	// Numbers
+const NumbersKeyMap = {
 	Digit1: ['1', '!'],
 	Digit2: ['2', '@'],
 	Digit3: ['3', '#'],
@@ -91,6 +109,12 @@ export const KeyMap = {
 	Digit8: ['8', '*'],
 	Digit9: ['9', '('],
 	Digit0: ['0', ')'],
+} as const;
+
+export const KeyMap = {
+	...LettersKeyMap,
+	...NumbersKeyMap,
+	...SymbolsKeyMap,
 
 	// NumPad (Numlock)
 	Numpad0: ['Insert', '0'],
@@ -128,20 +152,6 @@ export const KeyMap = {
 	ShiftRight: 'Shift',
 	MetaLeft: 'Meta',
 	MetaRight: 'Meta',
-
-	// Symbols
-	Slash: ['/', '?'],
-	Backslash: ['\\', '|'],
-	IntlBackslash: ['\\', '|'],
-	Period: ['.', '>'],
-	Comma: [',', '<'],
-	Quote: ['\'', '"'],
-	Backquote: ['`', '~'],
-	Semicolon: [';', ':'],
-	BracketLeft: ['[', '{'],
-	BracketRight: [']', '}'],
-	Minus: ['-', '_'],
-	Equal: ['=', '+'],
 
 	// Text Spaces
 	Insert: 'Insert',
