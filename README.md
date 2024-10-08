@@ -55,12 +55,13 @@ API
 const kbSim = new KeyboardSimulator(contextElement = document);
 ```
 The context element is the element that dispatches the following keyboard events.
-The default is `document`. Returns a `KeyboardSimulator` instance that has the following methods:
+The default is `document`.  
+Returns a `KeyboardSimulator` instance that has the following methods:
 
 * [`.keyDown()`](#keydownkeys)
 * [`.keyUp()`](#keyupkeys)
 * [`.keyPress()`](#keypresskeys)
-* [`.keyPressAsOne()`](#keypressasonekeys)
+* [`.combine()`](#combinekeys)
 * [`.holdKey()`](#holdkeykey-repeatcount)
 * [`.releaseAll()`](#releaseall)
 * [`.setContextElm()`](#setcontextelmhtmlelement)
@@ -69,7 +70,8 @@ The default is `document`. Returns a `KeyboardSimulator` instance that has the f
 Scroll down to see the [Key List](#keys-list)
 
 ### .keyDown(...keys)
-Dispatches one or more `keydown` events of given keys. Returns a boolean (or an array of booleans if passed in multiple keys), which is the result of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
+Dispatches one or more `keydown` events of given keys.  
+Returns a boolean (or an array of booleans if passed in multiple keys), which is the result of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
 
 ```js
 kbSim.keyDown('A');
@@ -83,7 +85,8 @@ kbSim.keyDown('A'); // ERROR
 ```
 
 ### .keyUp(...keys)
-Dispatches one or more `keyup` events of given keys. Returns a boolean (or an array of booleans if passed in multiple keys), which is the result of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
+Dispatches one or more `keyup` events of given keys.  
+Returns a boolean (or an array of booleans if passed in multiple keys), which is the result of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
 
 ```js
 kbSim.keyUp('A');
@@ -97,22 +100,37 @@ kbSim.keyUp('A'); // ERROR
 ```
 
 ### .keyPress(...keys)
-Dispatches `keydown` followed by `keyup` events for each given key, like user typing. Returns an array of two booleans (per key, one for the `keydown` event and one for `keyup`) or an array of array of two booleans if passed in multiple keys.
+Dispatches a `keydown` event followed by a `keyup` event for each given key, like user typing.  
+Returns a tuple (for a single key) or an array of tuples (for multiple keys). Each tuple is an array of two booleans i.e `[true, true]`. These booleans are the results of the dispatching of two events of a single keypress, one for the dispatching of `keydown` and one for `keyup`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
 
 ```js
 kbSim.keyPress('A');
 kbSim.keyPress('A', 'B', 'C');
+
+const results = kbSim.keyPress('A', 'B', 'C');
+// -> [[true, true], [true, true], [true, true]]
+// -> [[A down, up], [B down, up], [C down, up]]
 ```
 
-### .keyPressAsOne([keys])
-First, dispatches `keydown` events for all given keys, then dispatches all the `keyup` events, like a key combination (e.g.`Ctrl-A`). Returns an array of two booleans (per key, one for the `keydown` event and one for `keyup`) or an array of array of two booleans if passed in multiple keys.
+### .combine(...keys)
+For simulating key combinations (e.g. `ctrl-alt-m`). First, it dispatches `keydown` events for all given keys, then dispatches all the `keyup` events in reverse (last pressed key is released first).  
+Returns a tuple of two arrays: the first one is for the return values of dispatching all the given keys `keydown` events and the second is for the **reverse** dispatching of their `keyup` events. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
+
 
 ```js
-kbSim.keyPressAsOne(['Ctrl', 'A']);
+kbSim.combine('Ctrl', 'Alt', 'A');
+
+const results = kbSim.combine('Ctrl', 'Alt', 'A');
+// -> [[true, true, true], [true, true, true]]
+
+const [keydownResults, keyupResults] = results;
+// keydownResults -> [CtrlDown, AltDown, ADown]
+// keyupResults   -> [AUp, AltUp, CtrlUp]
 ```
 
 ### .holdKey(key, repeatCount)
-Simulates holding a key down by dispatching multiple `keydown` events for the same key with the `repeat` property set to `true`. Returns a boolean, which is the result of `.dspatchEvent docs)`. [MDN `dispatchEvent`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
+Simulates holding a key down by dispatching multiple `keydown` events for the same key with the `repeat` property set to `true`.  
+Returns a boolean, which is the result of `.dspatchEvent docs)`. [MDN `dispatchEvent`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
 
 ```js
 kbSim.keyDown('A', 'B', 'C');
@@ -120,7 +138,8 @@ kbSim.holdKey('C', 3);
 ```
 
 ### .releaseAll()
-Dispatches `keyup` events for all the keys that are pressed down in a reversed order of which they were pressed down (first down = last to be released)
+Dispatches `keyup` events for all the keys that are pressed down in a reversed order of which they were pressed down (first down = last to be released).  
+Return the same results as [`.keyUp()`](#keyupkeys)
 
 ```js
 kbSim.keyDown('A', 'B', 'C');

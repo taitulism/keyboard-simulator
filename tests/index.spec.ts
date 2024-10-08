@@ -28,9 +28,9 @@ describe('KeyboardSimulator', () => {
 			expect(kbSim.keyPress).to.be.a('function');
 		});
 
-		it('.keyPressAsOne()', () => {
-			expect(kbSim).toHaveProperty('keyPressAsOne');
-			expect(kbSim.keyPressAsOne).to.be.a('function');
+		it('.combine()', () => {
+			expect(kbSim).toHaveProperty('combine');
+			expect(kbSim.combine).to.be.a('function');
 		});
 
 		it('.holdKey()', () => {

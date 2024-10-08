@@ -231,10 +231,10 @@ describe('Dispatching', () => {
 		});
 	});
 
-	describe('.keyPressAsOne()', () => {
+	describe('.combine()', () => {
 		it('Handles multiple keys combination', () => {
 			expect(spy).not.toHaveBeenCalled();
-			kbSim.keyPressAsOne(['Ctrl', 'A']);
+			kbSim.combine('Ctrl', 'A');
 			expect(spy).toHaveBeenCalledTimes(4);
 
 			const [ev1, ev2, ev3, ev4] = extractLastEvents(spy, 4);
@@ -255,19 +255,25 @@ describe('Dispatching', () => {
 		});
 
 		it('Returns an array of tuples of two "canceled" booleans', () => {
-			const multi = kbSim.keyPressAsOne(['A', 'B']);
+			// results = [[true, true, true], [true, true, true]]
+			const results = kbSim.combine('A', 'B', 'C');
 
-			// multi = [[true, true], [true, true]]
-			expect(multi).to.be.an('Array');
-			expect(multi).to.have.lengthOf(2);
-			expect(multi[0]).to.be.an('Array');
-			expect(multi[0]).to.have.lengthOf(2);
-			expect(multi[0][0]).to.be.a('Boolean');
-			expect(multi[0][1]).to.be.a('Boolean');
-			expect(multi[1]).to.be.an('Array');
-			expect(multi[1]).to.have.lengthOf(2);
-			expect(multi[1][0]).to.be.a('Boolean');
-			expect(multi[1][1]).to.be.a('Boolean');
+			expect(results).to.be.an('Array');
+			expect(results).to.have.lengthOf(2);
+
+			const [keydownResults, keyupResults] = results;
+
+			expect(keydownResults).to.be.an('Array');
+			expect(keydownResults).to.have.lengthOf(3);
+			expect(keydownResults[0]).to.be.a('Boolean');
+			expect(keydownResults[1]).to.be.a('Boolean');
+			expect(keydownResults[2]).to.be.a('Boolean');
+
+			expect(keyupResults).to.be.an('Array');
+			expect(keyupResults).to.have.lengthOf(3);
+			expect(keyupResults[0]).to.be.a('Boolean');
+			expect(keyupResults[1]).to.be.a('Boolean');
+			expect(keyupResults[2]).to.be.a('Boolean');
 		});
 	});
 

@@ -145,13 +145,11 @@ export class KeyboardSimulator {
 		return (dispatchResults.length === 1) ? dispatchResults[0] : dispatchResults;
 	}
 
-	public keyPressAsOne (keys: Array<KeyName>): Array<KeyPressDispatchResults> {
+	public combine (...keys: Array<KeyName>): [Array<boolean>, Array<boolean>] {
 		const dispatchDownResults = keys.map((key) => this.keyDown(key));
+		const dispatchUpResults = keys.reverse().map((key) => this.keyUp(key));
 
-		const dispatchResults = keys.reverse()
-			.map((key, i) => ([dispatchDownResults[i], this.keyUp(key)]));
-
-		return dispatchResults as Array<KeyPressDispatchResults>;
+		return [dispatchDownResults, dispatchUpResults];
 	}
 
 	private createKeyboardEvent (
