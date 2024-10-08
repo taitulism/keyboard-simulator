@@ -62,7 +62,7 @@ Returns a `KeyboardSimulator` instance that has the following methods:
 * [`.keyUp()`](#keyupkeys)
 * [`.keyPress()`](#keypresskeys)
 * [`.combine()`](#combinekeys)
-* [`.holdKey()`](#holdkeykey-repeatcount)
+* [`.repeat()`](#repeatcount)
 * [`.release()`](#release)
 * [`.setContextElm()`](#setcontextelmhtmlelement)
 * [`.reset()`](#reset)
@@ -128,13 +128,13 @@ const [keydownResults, keyupResults] = results;
 // keyupResults   -> [AUp, AltUp, CtrlUp]
 ```
 
-### .holdKey(key, repeatCount)
-Simulates holding a key down by dispatching multiple `keydown` events for the same key with the `repeat` property set to `true`.  
-Returns a boolean, which is the result of `.dspatchEvent docs)`. [MDN `dispatchEvent`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
+### .repeat(count)
+Simulates holding a key down by dispatching multiple `keydown` events for the last pressed key with the `repeat` property set to `true`.  
+Returns a boolean, which is the result of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
 
 ```js
-kbSim.keyDown('A', 'B', 'C');
-kbSim.holdKey('C', 3);
+kbSim.keyDown('A', 'B', 'C'); // A B C
+kbSim.repeat(3);              // C C C
 ```
 
 ### .release()

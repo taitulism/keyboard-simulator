@@ -181,16 +181,14 @@ export class KeyboardSimulator {
 		});
 	}
 
-	public holdKey (keyName: KeyName, repeatCount: number) {
-		const keyId = getKeyId(keyName);
+	public repeat (count: number) {
+		if (!this.heldKeys.size) throw new Error('Cannot repeat. No keys are pressed down.');
 
-		this.followKey(keyId);
-		if (isModifier(keyId)) this.toggleModifier(keyId, true);
-
+		const lastKey = Array.from(this.heldKeys)[this.heldKeys.size - 1];
 		const dispatches = [];
 
-		for (let i = 0; i < repeatCount; i++) {
-			const keyDownEvent = this.createKeyboardEvent('keydown', keyId, true);
+		for (let i = 0; i < count; i++) {
+			const keyDownEvent = this.createKeyboardEvent('keydown', lastKey, true);
 
 			dispatches.push(this.ctxElm.dispatchEvent(keyDownEvent));
 		}

@@ -42,7 +42,7 @@ describe('Dispatching', () => {
 			expect(ev.cancelable).to.equal(true);
 			expect(ev.composed).to.equal(true);
 			expect(ev.isComposing).to.equal(false);
-			expect(ev.view).to.equal(doc?.defaultView);
+			expect(ev.view).to.equal(doc.defaultView);
 		});
 
 		it('Handles multiple keys', () => {
@@ -107,6 +107,13 @@ describe('Dispatching', () => {
 			expect(ev.key).to.equal('a');
 			expect(ev.code).to.equal('KeyA');
 			expect(ev.type).to.equal('keyup');
+			expect(ev.repeat).to.equal(false);
+			expect(ev.location).to.equal(1);
+			expect(ev.bubbles).to.equal(true);
+			expect(ev.cancelable).to.equal(true);
+			expect(ev.composed).to.equal(true);
+			expect(ev.isComposing).to.equal(false);
+			expect(ev.view).to.equal(doc.defaultView);
 		});
 
 		it('Handles multiple keys', () => {
@@ -277,43 +284,47 @@ describe('Dispatching', () => {
 		});
 	});
 
-	describe('.holdKey()', () => {
+	describe('.repeat()', () => {
 		it('Dispatches multiple "keydown" events with `repeat: true`', () => {
 			expect(spy).not.toHaveBeenCalled();
-			kbSim.holdKey('Ctrl', 3);
+			kbSim.keyDown('A', 'B', 'C');
 			expect(spy).toHaveBeenCalledTimes(3);
+			kbSim.repeat(3);
+			expect(spy).toHaveBeenCalledTimes(6);
 
-			const ev = extractLastEvent(spy);
+			const events = extractLastEvents(spy, 3);
 
-			expect(ev.key).to.equal('Control');
-			expect(ev.code).to.equal('ControlLeft');
-			expect(ev.type).to.equal('keydown');
-			expect(ev.repeat).to.equal(true);
-			expect(ev.location).to.equal(1);
-			expect(ev.bubbles).to.equal(true);
-			expect(ev.cancelable).to.equal(true);
-			expect(ev.composed).to.equal(true);
-			expect(ev.isComposing).to.equal(false);
-			expect(ev.view).to.equal(doc?.defaultView);
+			expect(events[0].code).to.equal('KeyC');
+			expect(events[0].type).to.equal('keydown');
+			expect(events[0].repeat).to.equal(true);
+
+			expect(events[1].code).to.equal('KeyC');
+			expect(events[1].type).to.equal('keydown');
+			expect(events[1].repeat).to.equal(true);
+
+			expect(events[2].code).to.equal('KeyC');
+			expect(events[2].type).to.equal('keydown');
+			expect(events[2].repeat).to.equal(true);
 		});
 
 		it('Returns an array of "canceled" booleans', () => {
-			const events = kbSim.holdKey('A', 3);
+			kbSim.keyDown('A', 'B', 'C');
 
-			expect(events).to.be.an('Array');
-			expect(events).to.have.lengthOf(3);
-			expect(events[0]).to.be.a('Boolean');
-			expect(events[1]).to.be.a('Boolean');
-			expect(events[2]).to.be.a('Boolean');
+			const results = kbSim.repeat(3);
+
+			expect(results).to.be.an('Array');
+			expect(results).to.have.lengthOf(3);
+			expect(results[0]).to.be.a('Boolean');
+			expect(results[1]).to.be.a('Boolean');
+			expect(results[2]).to.be.a('Boolean');
 		});
 
-		it('Throws when key is already down', () => {
-			const keyAlreadyDown = () => {
-				kbSim.keyDown('A');
-				kbSim.holdKey('A', 2);
+		it('Throws when no keys are held down', () => {
+			const noPressedKeys = () => {
+				kbSim.repeat(2);
 			};
 
-			expect(keyAlreadyDown).toThrowError('"KeyA" is already pressed down');
+			expect(noPressedKeys).toThrowError('Cannot repeat. No keys are pressed down.');
 		});
 	});
 

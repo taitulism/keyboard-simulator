@@ -33,9 +33,9 @@ describe('KeyboardSimulator', () => {
 			expect(kbSim.combine).to.be.a('function');
 		});
 
-		it('.holdKey()', () => {
-			expect(kbSim).toHaveProperty('holdKey');
-			expect(kbSim.holdKey).to.be.a('function');
+		it('.repeat()', () => {
+			expect(kbSim).toHaveProperty('repeat');
+			expect(kbSim.repeat).to.be.a('function');
 		});
 
 		it('.setContextElm()', () => {
