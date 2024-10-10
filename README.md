@@ -4,30 +4,47 @@
 
 Keyboard Simulator
 ==================
-A smart keyboard events dispatcher.
+A stateful keyboard events dispatcher.
 
-Keyboard Simulator aims to mimick a real keyboard behavior by keeping track of its key activation (e.g. `kb.keyDown()`).  
-Generated events are shaped according to the different keyboard states.
+✅ Great for testing your hotkeys and keyboard shortcuts.
 
-Currently only supports EN-US Qwerty keyboard layout.
+On the other side of hotkeys and keyboard shortcuts libraries, which are more about listening to `event.key` - the generated character of a key, Keyboard-Simulator is more about simulating actual key presses by their physical key IDs (`event.code`).
+
+In other words: it's not about the `$`, it's about the `ShiftLeft` and `Digit4`.
+
+> Don't worry, there are key aliases like `shift` and `4`.  
+See the [Key List](#keys-list) below.
+
+Keyboard-Simulator aims to mimick a real keyboard behavior by keeping track of its key activation and dispatching keyboard events that are shaped according to the different states of meaningful keyboard's keys like `CapsLock`.
+
 
 Key features:
-* The value of `event.key` will be set to (for the relevant keys):
-	* **Digits** when `NumLock` is on
-	* **Uppercase letters** when `CapsLock` is on
-	* **Uppercase letters** when `Shift` is pressed down
-	* **Alternative symbols** when `Shift` is pressed down
-* When a modifier key is pressed down (Control, Alt, Shift, Meta) the following event properties will be set to `true` accordingly:
+* The dispatching element updates dynamically as DOM focus changes (`document.activeElement`)
+* The value of `event.key` takes into account:
+	* `NumLock` state
+	* `CapsLock` state (for letters)
+	* `Shift` state (for letters, number and symbols)
+	> **Note:** `NumLock` is on by default. `CapsLock` and `ScrollLock` are off.
+* The following event properties are set according to the modifier keys that are pressed down:
 	* `event.ctrlKey`
 	* `event.altKey`
 	* `event.shiftKey`
 	* `event.metaKey`
-* Pressing an already-down key is prevented
-* Releasing a non-pressed key is prevented
+* The following event properties are set with defaults:
+	* `event.bubbles = true`
+	* `event.cancelable = true`
+	* `event.composed = true`
+	* `event.repeat = false`
+	* `event.isComposing = false`
+	* `event.view = Window`
+	* `event.location = 1`
+* Pressing an already-down key throws an error.
+* Releasing a non-pressed key throws an error.
 
-> **Note:** `NumLock` is on by default. `CapsLock` and `ScrollLock` are off.
 
-Scroll down to see the [Key List](#keys-list)
+> Currently only supports EN-US Qwerty keyboard layout.
+
+
 
 Install
 -------
@@ -37,6 +54,7 @@ $ npm install keyboard-simulator
 
 Basic Usage
 -----------
+
 ```js
 import {KeyboardSimulator} from 'keyboard-simulator`;
 
@@ -44,18 +62,64 @@ const kbSim = new KeyboardSimulator();
 
 kbSim.keyDown('A');
 kbSim.keyUp('A');
+// or:
+kbSim.keyPress('A');
 
-kbSim.keyPress('B');
+
+kbSim.keyDown('Ctrl', 'B');
+keyDown.release();
+// or:
+kbSim.Combine('Ctrl', 'B');
 ```
+
+The Dispatching Element
+-----------------------
+> The element that **listens** to events is the `event.currentTarget`.  
+The element which events are **dispatched** on is the `event.target`.
+
+When typing, keyboard events are naturally dispatched on the element within focus. On a fresh page load, focus starts on the `<body>` element until another element, such as an input field, receives focus, either by user interaction (e.g. when clicked on or Tab-navigated into) or programmatically (e.g. `input.focus()`). Once in focus, all keyboard events will be dispatched on that `input` element.
+
+
+The `Document` object tracks the currently focused element, which can be accessed via `document.activeElement`. By default, `KeyboardSimulator` follows this behavior and dispatches keyboard events on the currently active element:
+
+```js
+kbSim.keyDown('A');
+// --> document.activeElement.dispatchEvent(KeyboardEvent)
+```
+
+
+When `document.activeElement` doesn't point to your expected element, make sure that element is:
+1. "focusable"
+2. currently has focus.
+
+> _To enable focus on an "unfocusable" element give it a `tabindex="1"` attribute and call `.focus()` on that element.  
+See [MDN tabindex docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex) for details._
+
+If you prefer not to use the dynamic behavior of `document.activeElement` you can override it by setting a static context element. You can do so on construction or by calling the instance's `.setContextElm(elm)` method.
+
+At any point you can check the current context element with `instance.ctxElm`
 
 API
 ---
 ### Constructor
+
 ```js
-const kbSim = new KeyboardSimulator(contextElement = document);
+const instance = new KeyboardSimulator(contextElm);
+
+// or:
+const instance = new KeyboardSimulator();
+
+instance.setContext(contextElm);
 ```
-The context element is the element that dispatches the following keyboard events.
-The default is `document`.  
+**`contextElm`** - Optional. `HTMLElement | Document`  
+When passing in an HTML element it will override the default behavior of a dynamic dispatching element and the element is set as the dispatching element, the `event.target` for the following events.
+
+> **⚠ Non-browser environments:**  
+**TL;DR** - If experiencing environment issues, pass the `document` as the constructor argument.  
+&nbsp;  
+The `contextElm` is also being used internally for referencing the `Document` object so passing a context might be mandatory when running in non-browser environments (e.g. JSDOM when not configured ideally).  
+If no context is passed, `Document` is grabbed from the global scope and that might cause an issue as the library code and your runtime code are using different `Document` objects. In this case pass the contructor with the `document` object (it will not be treated as a context element).
+
 Returns a `KeyboardSimulator` instance that has the following methods:
 
 * [`.keyDown()`](#keydownkeys)
@@ -65,10 +129,12 @@ Returns a `KeyboardSimulator` instance that has the following methods:
 * [`.repeat()`](#repeatcount)
 * [`.release()`](#release)
 * [`.setContextElm()`](#setcontextelmhtmlelement)
-* [`.createKeyboardEvent()`](#createKeyboardEvent)
+* [`.ctxElm`](#ctxelm---getter) [Getter]
+* [`.createKeyboardEvent()`](#createkeyboardeventeventtype-keyname-eventopts)
 * [`.reset()`](#reset)
 
-Scroll down to see the [Key List](#keys-list)
+See the [Key List](#keys-list) below.
+
 
 ### .keyDown(...keys)
 Dispatches one or more `keydown` events of given keys.  
@@ -82,7 +148,7 @@ kbSim.keyDown('X', 'Y', 'Z');
 The instance tries to simulate a real physical keyboard so when a key is already pressed down, trying to press it again throws an error:
 ```js
 kbSim.keyDown('A');
-kbSim.keyDown('A'); // ERROR
+kbSim.keyDown('A'); // ERROR - key 'A' is already pressed down
 ```
 
 ### .keyUp(...keys)
@@ -96,8 +162,9 @@ kbSim.keyUp('X', 'Y', 'Z');
 
 The instance tries to simulate a real physical keyboard so when a key is not pressed down, trying to release it with `.keyUp()` throws an error:
 ```js
+kbSim.keyDown('A');
 kbSim.keyUp('A');
-kbSim.keyUp('A'); // ERROR
+kbSim.keyUp('A'); // ERROR - key 'A' is not pressed down
 ```
 
 ### .keyPress(...keys)
@@ -114,13 +181,11 @@ const results = kbSim.keyPress('A', 'B', 'C');
 ```
 
 ### .combine(...keys)
-For simulating key combinations (e.g. `ctrl-alt-m`). First, it dispatches `keydown` events for all given keys, then dispatches all the `keyup` events in reverse (last pressed key is released first).  
-Returns a tuple of two arrays: the first one is for the return values of dispatching all the given keys `keydown` events and the second is for the **reverse** dispatching of their `keyup` events. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
+For simulating key combinations (e.g. `ctrl-alt-m`). First, it dispatches `keydown` events for all given keys, then dispatches all the `keyup` events in reverse order (last pressed key is released first).  
+Returns a tuple of two arrays: the first one is for all the `keydown` events and the second is for the `keyup` events (reversed). [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
 
 
 ```js
-kbSim.combine('Ctrl', 'Alt', 'A');
-
 const results = kbSim.combine('Ctrl', 'Alt', 'A');
 // -> [[true, true, true], [true, true, true]]
 
@@ -131,7 +196,7 @@ const [keydownResults, keyupResults] = results;
 
 ### .repeat(count)
 Simulates holding a key down by dispatching multiple `keydown` events for the last pressed key with the `repeat` property set to `true`.  
-Returns a boolean, which is the result of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
+Returns an array of booleans which are the results of `.dispatchEvent()`. [MDN dispatchEvent docs](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent#return_value).
 
 ```js
 kbSim.keyDown('A', 'B', 'C'); // A B C
@@ -152,16 +217,54 @@ kbSim.release(); // keyup C, B, A
 kbSim.release('C', 'B', 'A');
 ```
 
+
 ### .setContextElm(HTMLElement)
-Sets a new context element to dispatch following events.
+Sets an element as the dispatching element. Once a context element is set, the instance will ignore `document.activeElement`.
+
+Call with no arguments to unset the context element. The instance will dispatch on `document.activeElement` again.
 
 ```js
-const kbSim = new KeyboardSimulator(); // `document` is the default
+const kbSim = new KeyboardSimulator();
+// document.activeElement = `<body>` by default 
 
-kbSim.keyPress('A'); // document.dispatchEvent()
-kbSim.setContextElm(myDiv);
-kbSim.keyPress('A'); // myDiv.dispatchEvent()
+kbSim.keyPress('A');        // ev.target === <body>
+input.focus();              // Changes active element
+kbSim.keyPress('A');        // ev.target === <input>
+
+kbSim.setContextElm(myDiv); // Overrides active element
+input.focus();              // wouldn't matter
+kbSim.keyPress('A');        // ev.target === <myDiv>
+
+kbSim.setContextElm();      // Back to activeElement
+kbSim.keyPress('A');        // ev.target === <input>
 ```
+> Note: Calling `.reset()` removes the context element.
+
+
+
+### .ctxElm - [Getter]
+Returns the current dispathing element.
+If a context element is set - returns it, else returns `document.activeElement`.
+
+> `document.activeElement` might be `null` in non-browser environments.
+
+```js
+const kbSim = new KeyboardSimulator();
+// document.activeElement = `<body>` by default 
+
+consle.log(kbSim.ctxElm);   // -> <body>
+input.focus();              // Changes active element
+consle.log(kbSim.ctxElm);   // -> <input>
+
+kbSim.setContextElm(myDiv);
+consle.log(kbSim.ctxElm);   // -> <myDiv>
+input.focus();              // wouldn't matter
+consle.log(kbSim.ctxElm);   // -> <myDiv>
+
+kbSim.setContextElm();      // Back to activeElement
+consle.log(kbSim.ctxElm);   // -> <input>
+```
+
 
 ### .createKeyboardEvent(eventType, keyName, eventOpts)
 * **eventType** - `'keydown'` | `'keyup'`
@@ -195,8 +298,9 @@ const kbEvent = kbSim.createKeyboardEvent('keydown', 'A', {bubbles: false});
 kbSim.ctxElm.dispatchEvent(kbEvent);
 ```
 
+
 ### .reset()
-The instance keeps track of pressed keys. Calling `.reset()` clears the records but does not change the context element.
+The instance keeps track of pressed keys. Calling `.reset()` clears the records, context element included.
 
 ```js
 kbSim.keyDown('A');
@@ -204,6 +308,7 @@ kbSim.keyDown('A'); // ERROR - key 'A' is already pressed down
 kbSim.reset();
 kbSim.keyDown('A'); // OK
 ```
+
 
 Keys
 ----

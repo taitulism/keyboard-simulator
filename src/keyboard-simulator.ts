@@ -188,9 +188,10 @@ export class KeyboardSimulator {
 
 		const lastKey = Array.from(this.heldKeys)[this.heldKeys.size - 1];
 		const dispatches = [];
+		const opts = {repeat: true};
 
 		for (let i = 0; i < count; i++) {
-			const keyDownEvent = this.createKeyboardEvent('keydown', lastKey, {repeat: true});
+			const keyDownEvent = this.createKeyboardEvent('keydown', lastKey, opts);
 
 			dispatches.push(this.ctxElm.dispatchEvent(keyDownEvent));
 		}
