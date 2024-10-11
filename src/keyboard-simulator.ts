@@ -54,6 +54,7 @@ export class KeyboardSimulator {
 
 		const {doc} = this; // Getter activated
 
+		// TODO:ts "as HTMLElement" is wrong. Should be "Element" (svg & iframe)
 		if (doc.activeElement) return doc.activeElement as HTMLElement;
 
 		return doc;
@@ -185,7 +186,7 @@ export class KeyboardSimulator {
 			shiftKey: this.isShiftDown,
 			metaKey: this.isMetaDown,
 			repeat: false,
-			location: 1, // TODO:
+			location: 1,
 			bubbles: true,
 			cancelable: true,
 			composed: true, // event will propagate across the shadow DOM boundary into the standard DOM
