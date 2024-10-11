@@ -1,7 +1,7 @@
 {
 	"name": "keyboard-simulator",
 	"description": "A smart keyboard events dispatcher.",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"license": "MIT",
 	"main": "./src/index.ts",
 	"module": "./dist/esm/keyboard-simulator.esm.js",
