@@ -17,11 +17,10 @@ export type ContextElement = HTMLElement | Document
 export type EventType = 'keydown' | 'keyup'
 export type KeyPressDispatchResults = [boolean, boolean]
 
-const isDocument = (doc: object): doc is Document =>
-	'nodeType' in doc && doc.nodeType === 9; // Node.DOCUMENT_NODE = 9
+const isObject = (thing: unknown) => typeof thing === 'object' && thing !== null;
+const isDocument = (doc: unknown): doc is Document =>
+	isObject(doc) && 'nodeType' in doc && doc.nodeType === 9; // Node.DOCUMENT_NODE = 9
 	// doc.constructor.name === 'HTMLDocument'; // fails in JSDOM ('Document')
-
-export type Maybe<T> = T | undefined
 
 export class KeyboardSimulator {
 	private isCtrlDown = false;
@@ -33,31 +32,47 @@ export class KeyboardSimulator {
 	private isNumLockOn = true;
 	private heldKeys = new Set<KeyName>();
 
-	private _ctxElm: Maybe<ContextElement>;
-	public doc: Document;
+	private _ctxElm: ContextElement | null = null;
+	private _doc: Document | undefined;
 
 	constructor (ctxElm?: ContextElement) {
+		this.setContextElm(ctxElm);
+	}
+
+	private set doc (doc: Document) {
+		this._doc = doc;
+	}
+
+	private get doc (): Document {
+		if (!this._doc) this._doc = document; // Set once (global)
+
+		return this._doc;
+	}
+
+	public get ctxElm (): ContextElement {
+		if (this._ctxElm) return this._ctxElm;
+
+		const {doc} = this; // Getter activated
+
+		if (doc.activeElement) return doc.activeElement as HTMLElement;
+
+		return doc;
+	}
+
+	public setContextElm (ctxElm?: ContextElement | null) {
 		if (!ctxElm) {
-			this.doc = document;
+			this._ctxElm = null;
 		}
 		else if (isDocument(ctxElm)) {
 			this.doc = ctxElm;
 		}
 		else { // is HTMLElement
-			this.doc = ctxElm.ownerDocument;
+			if (!this._doc) {
+				this.doc = ctxElm.ownerDocument;
+			}
+
 			this._ctxElm = ctxElm;
 		}
-	}
-
-	public get ctxElm (): ContextElement {
-		if (this._ctxElm) return this._ctxElm;
-		if (this.doc.activeElement) return this.doc.activeElement as HTMLElement;
-
-		return this.doc;
-	}
-
-	public setContextElm (ctxElm?: Maybe<ContextElement>) {
-		this._ctxElm = ctxElm;
 
 		return this;
 	}
@@ -81,7 +96,7 @@ export class KeyboardSimulator {
 		this.isNumLockOn = true;
 		this.isScrollLockOn = false;
 		this.heldKeys.clear();
-		this._ctxElm = undefined;
+		this._ctxElm = null;
 	}
 
 	private toggleModifier (keyId: ModifierID, isPressed: boolean = false) {

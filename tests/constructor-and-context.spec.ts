@@ -53,6 +53,7 @@ describe('Constructor', () => {
 		expect(evTarget2).to.be.instanceOf(win.HTMLInputElement);
 		expect(evTarget2).to.equal(input);
 
+		// Teardown
 		input.remove();
 		globalThis.document = originalDoc;
 	});
@@ -112,7 +113,10 @@ describe('Context Element', () => {
 	let spy: MockInstance;
 
 	beforeAll(() => {
-		const dom = new JSDOM('<input id="input" type="text" />', {url: 'http://localhost'});
+		const dom = new JSDOM(
+			'<div id="the-div"></div><input id="input" type="text" />',
+			{url: 'http://localhost'},
+		);
 
 		win = dom.window;
 		doc = dom.window.document;
@@ -134,7 +138,7 @@ describe('Context Element', () => {
 	});
 
 	describe('.setContextElm()', () => {
-		it('Changes the element that gets the keyboard events', () => {
+		it('Sets the element that will dispatch the following keyboard events', () => {
 			kbSim.keyPress('A');
 			kbSim.setContextElm(input);
 			kbSim.keyPress('B');
@@ -143,7 +147,24 @@ describe('Context Element', () => {
 			const [evBefore, _1, evAfter, _2] = extractLastEvents(spy, 4);
 
 			expect(evBefore.target).to.equal(doc.body);
+			expect(evBefore.target).to.be.instanceOf(win.HTMLBodyElement);
 			expect(evAfter.target).to.be.instanceOf(win.HTMLInputElement);
+			expect(evAfter.target).to.equal(input);
+		});
+
+		it('Unsets the dispatching element', () => {
+			kbSim.setContextElm(input);
+			kbSim.keyPress('A');
+			kbSim.setContextElm(null);
+			kbSim.keyPress('B');
+
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const [evBefore, _1, evAfter, _2] = extractLastEvents(spy, 4);
+
+			expect(evBefore.target).to.equal(input);
+			expect(evBefore.target).to.be.instanceOf(win.HTMLInputElement);
+			expect(evAfter.target).to.be.instanceOf(win.HTMLBodyElement);
+			expect(evAfter.target).to.equal(doc.body);
 		});
 
 		it('Returns the instance', () => {
@@ -153,12 +174,12 @@ describe('Context Element', () => {
 		});
 	});
 
-	describe('.ctxElm - Getter', () => {
+	describe('.ctxElm [Getter]', () => {
 		it('Returns Body by default', () => {
 			expect(kbSim.ctxElm).to.equal(doc.body);
 		});
 
-		it('Returns a given HTML element when explicitly set with `.setContextElm()`', () => {
+		it('Returns a given HTML element that was explicitly set with `.setContextElm()`', () => {
 			expect(kbSim.ctxElm).to.equal(doc.body);
 			kbSim.setContextElm(input);
 			expect(kbSim.ctxElm).to.equal(input);
@@ -173,21 +194,24 @@ describe('Context Element', () => {
 		});
 
 		it('Explicit `.setContextElm()` overtakes `document.activeElement`', () => {
+			const div = doc.getElementById('the-div');
+
 			expect(kbSim.ctxElm).to.equal(doc.body);
 			input.focus();
 			expect(kbSim.ctxElm).to.equal(input);
 			input.blur();
 			expect(kbSim.ctxElm).to.equal(doc.body);
-			kbSim.setContextElm(doc);
-			input.focus();
-			expect(kbSim.ctxElm).to.equal(doc);
 
+			kbSim.setContextElm(div);
+			input.focus();
+			expect(kbSim.ctxElm).to.equal(div);
+
+			// Teardown
 			input.blur();
-			kbSim.setContextElm(doc.body);
 		});
 
 		it('Returns `document` if no active element', () => {
-			const {body} = doc; // Because .remove() leaves doc.body = null
+			const {body} = doc; // After body.remove() doc.body is null
 
 			expect(kbSim.ctxElm).to.equal(doc.body);
 			doc.body.remove();

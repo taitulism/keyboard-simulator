@@ -75,7 +75,7 @@ kbSim.Combine('Ctrl', 'B');
 The Dispatching Element
 -----------------------
 > The element that **listens** to events is the `event.currentTarget`.  
-The element which events are **dispatched** on is the `event.target`.
+The element that **dispatches** events is the `event.target`.
 
 When typing, keyboard events are naturally dispatched on the element within focus. On a fresh page load, focus starts on the `<body>` element until another element, such as an input field, receives focus, either by user interaction (e.g. when clicked on or Tab-navigated into) or programmatically (e.g. `input.focus()`). Once in focus, all keyboard events will be dispatched on that `input` element.
 
@@ -109,16 +109,14 @@ const instance = new KeyboardSimulator(contextElm);
 // or:
 const instance = new KeyboardSimulator();
 
-instance.setContext(contextElm);
+instance.setContextElm(contextElm); // optional
 ```
-**`contextElm`** - Optional. `HTMLElement | Document`  
-When passing in an HTML element it will override the default behavior of a dynamic dispatching element and the element is set as the dispatching element, the `event.target` for the following events.
+> **⚠ Non-browser environments:** You might need to pass in the runtime's `document` object as the constructor argument. [See details](#non-browser-environments).
 
-> **⚠ Non-browser environments:**  
-**TL;DR** - If experiencing environment issues, pass the `document` as the constructor argument.  
-&nbsp;  
-The `contextElm` is also being used internally for referencing the `Document` object so passing a context might be mandatory when running in non-browser environments (e.g. JSDOM when not configured ideally).  
-If no context is passed, `Document` is grabbed from the global scope and that might cause an issue as the library code and your runtime code are using different `Document` objects. In this case pass the contructor with the `document` object (it will not be treated as a context element).
+**`contextElm`** - Optional. `HTMLElement | Document`  
+* `HTMLElement` - That element becomes the dispatching element. This overrides the default behavior of a dynamic dispatching element mentioned above.
+* `Document` - A document is only used for reference. The dispatching element remains dynamic.
+
 
 Returns a `KeyboardSimulator` instance that has the following methods:
 
@@ -135,6 +133,12 @@ Returns a `KeyboardSimulator` instance that has the following methods:
 
 See the [Key List](#keys-list) below.
 
+#### Non-Browser Environments
+The `contextElm` is also being used internally for referencing the `Document` object so passing a context might be mandatory when running in non-browser environments (e.g. JSDOM when not configured ideally).
+
+If no context is passed, `Document` is grabbed from the global scope and that might cause an issue as the library code and your runtime code are using different `Document` objects. In this case pass the contructor with the `document` object (it will not be treated as a context element).
+
+If you pass in an `HTMLElement` you don't need to pass a `document`, it will be derived from the HTML element via `elm.ownerDocument`.
 
 ### .keyDown(...keys)
 Dispatches one or more `keydown` events of given keys.  
@@ -301,6 +305,8 @@ kbSim.ctxElm.dispatchEvent(kbEvent);
 
 ### .reset()
 The instance keeps track of pressed keys. Calling `.reset()` clears the records, context element included.
+
+> NOTE: `.reset()` does not clear the `document` reference.
 
 ```js
 kbSim.keyDown('A');
