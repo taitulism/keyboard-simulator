@@ -143,7 +143,6 @@ describe('Context Element', () => {
 			kbSim.setContextElm(input);
 			kbSim.keyPress('B');
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const [evBefore, _1, evAfter, _2] = extractLastEvents(spy, 4);
 
 			expect(evBefore.target).to.equal(doc.body);
@@ -158,7 +157,6 @@ describe('Context Element', () => {
 			kbSim.setContextElm(null);
 			kbSim.keyPress('B');
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const [evBefore, _1, evAfter, _2] = extractLastEvents(spy, 4);
 
 			expect(evBefore.target).to.equal(input);

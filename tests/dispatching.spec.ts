@@ -77,7 +77,6 @@ describe('Dispatching', () => {
 
 		it('Throws on unsupported key', () => {
 			const nonExistKey = () => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-expect-error
 				kbSim.keyDown('No Key');
 			};
@@ -154,7 +153,6 @@ describe('Dispatching', () => {
 
 		it('Throws on unsupported key', () => {
 			const nonExistKey = () => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-expect-error
 				kbSim.keyUp('No Key');
 			};

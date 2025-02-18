@@ -68,7 +68,6 @@ describe('.reset()', () => {
 		kbSim.keyPress('A');
 		kbSim.keyPress('Np1');
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [letterEventBefore, _1, numberEventBefore, _2] = extractLastEvents(spy, 4);
 
 		expect(letterEventBefore.key).to.equal('a');
@@ -80,7 +79,6 @@ describe('.reset()', () => {
 		kbSim.keyPress('A');
 		kbSim.keyPress('Np1');
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [letterEventAfter, _3, numberEventAfter, _4] = extractLastEvents(spy, 4);
 
 		expect(letterEventAfter.key).to.equal('A');
